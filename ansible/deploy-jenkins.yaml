@@ -1,0 +1,89 @@
+---
+- name: Deploy Docker + Components
+  hosts: digitalocean
+  tasks:
+    - name: Install Python3, Nettools & Docker on Host
+      ansible.builtin.apt:
+        name:
+          - python3
+          - net-tools
+          - python3-pip
+          - python3-docker
+          - docker.io
+        update_cache: true
+        state: present
+
+- name: Start Docker
+  hosts: digitalocean
+  become: true
+  tasks:
+    - name: Start Docker daemon on Host
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+
+- name: Manage Jenkins
+  hosts: digitalocean
+  tasks:
+    - name: Docker Run -> Jenkins
+      community.docker.docker_container:
+        name: jenkins
+        image: jenkins/jenkins
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+
+    - name: Check if Nodesource is downloaded
+      community.docker.docker_container_exec:
+        container: jenkins
+        command: sh -c 'if [ -f /root/nodesource_setup.sh ]; then echo "exists"; else echo "not exist"; fi'
+        user: root
+      register: file_check_result
+
+    # - name: view results
+    #   ansible.builtin.debug:
+    #     var: file_check_result.stdout
+
+    - name: In Container -> Download Nodesource
+      community.docker.docker_container_exec:
+        container: jenkins
+        command: curl -sL https://deb.nodesource.com/setup_20.x -o /root/nodesource_setup.sh
+        chdir: /root
+        user: root
+      when: file_check_result.stdout != "exists"
+
+    - name: In Container -> Run Nodesource
+      community.docker.docker_container_exec:
+        container: jenkins
+        command: bash /root/nodesource_setup.sh
+        chdir: /root
+        user: root
+      when: file_check_result.stdout == "exists"
+
+    - name: In Container -> Install NodeJS
+      community.docker.docker_container_exec:
+        container: jenkins
+        command: apt install nodejs -y
+        chdir: /root
+        user: root
+      when: file_check_result.stdout == "exists"
+
+    - name: Get Jenkins password
+      community.docker.docker_container_exec:
+        container: jenkins
+        command: sh -c 'if [ -f /var/jenkins_home/secrets/initialAdminPassword ]; then cat /var/jenkins_home/secrets/initialAdminPassword; else echo "File does
+         not exist."; fi'
+        # cat /var/jenkins_home/secrets/initialAdminPassword
+        chdir: /root
+        user: root
+      register: exec_results
+
+    - name: Jenkins Default PW
+      ansible.builtin.debug:
+        msg: "{{ exec_results.stdout }}"
+      when: exec_results != []
+
+# Run in Jenkins container
+# apt install python3 && apt install pip && apt install python3-boto3 && apt install python3-paramiko && apt install python3-requests
