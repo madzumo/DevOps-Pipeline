@@ -8,7 +8,7 @@ terraform {
 }
 
 variable "do_token" {
-  default = "dop_v1_439f341fe4c567c271c1a6ff41e6c216311d4bd74e69f2fabafe529e3f0a87a3"
+  default = ""
 }
 
 provider "digitalocean" {
