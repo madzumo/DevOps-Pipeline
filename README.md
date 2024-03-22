@@ -1,2 +1,3 @@
 # DevOps Pipeline
-full CI/CD pipeline to deploy and manage a web application
+
+full CI/CD pipeline showcasing various DevOps technologies
