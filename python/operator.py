@@ -34,6 +34,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         aws configure set aws_secret_access_key {self.secret_id}
         aws configure set default.region {self.region}
         terraform -chdir=madzumo/terraform/aws init
+        terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
         
         ssh_client = paramiko.SSHClient()
@@ -43,7 +44,7 @@ class OperatorEc2(ec2_config.Ec2Config):
             # print(f"host: {self.ec2_instance_public_ip}\nuser: {self.ssh_username}\nkeyfile: {self.ssh_key_path}")
             ssh_client.connect(hostname=self.ec2_instance_public_ip, username=self.ssh_username, key_filename=self.ssh_key_path, timeout=self.ssh_timeout)
             print("SSH connection established")
-
+            print("Running Operator script.....")
             # Execute Terraform installation script
             stdin, stdout, stderr = ssh_client.exec_command(install_script, timeout=self.ssh_timeout)
             # Print output
