@@ -1,0 +1,11 @@
+---
+- name: Remove Kubernetes Resource
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Delete Kubernetes Deployment
+      kubernetes.core.k8s:
+        kubeconfig: /home/ec2-user/.kube/config
+        state: absent
+        src: /home/ec2-user/madzumo/k8s/ecommerce.yaml
+        namespace: madzumo-ops

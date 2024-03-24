@@ -101,12 +101,12 @@ class Ec2Config(aws_madzumo.AWSbase):
         else:
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
-            print(f"EC2 instance {self.ec2_instance_id} terminated.\n Waiting for completion...")
+            print(f"EC2 instance {self.ec2_instance_id} terminating.....")
             sleep(10)
             
-            self.delete_security_group()
             self.delete_key_pair()
-    
+            self.delete_security_group()
+            
     def get_security_group_id (self):
         response = self.ec2_client.describe_security_groups(
             Filters = [

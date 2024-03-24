@@ -19,6 +19,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         sudo yum install python3
         sudo yum install python3-pip -y
         pip install ansible
+        pip install kubernetes
         sudo yum install git -y
         if [ ! -d "madzumo" ]; then
             git clone https://github.com/madzumo/devOps_pipeline.git madzumo
@@ -28,6 +29,8 @@ class OperatorEc2(ec2_config.Ec2Config):
         aws configure set aws_access_key_id {self.key_id}
         aws configure set aws_secret_access_key {self.secret_id}
         aws configure set default.region {self.region}
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         """
         # print(f"What we have\n{self.ec2_instance_public_ip}\n{self.ssh_username}\n{self.ssh_key_path}")
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
@@ -37,8 +40,10 @@ class OperatorEc2(ec2_config.Ec2Config):
         print("Initialize Terraform")
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
-        terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
+        ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
+        ssh_run.run_command(install_script)
+        
         print("Apply Terraform script")
         print("Waiting on cluster(10 min). Please wait.........")
         install_script = """
@@ -63,4 +68,19 @@ class OperatorEc2(ec2_config.Ec2Config):
         print("Output Review")
     
     def terraform_eks_cluster_down(self):
-        print("Destroying EKS Cluster")
+        print("Removing e-commerce site from EKS Cluster")
+        install_script = """
+        ansible-playbook madzumo/ansible/remove-web.yaml
+        """
+        ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
+        ssh_run.run_command(install_script)
+        
+        print("Removing EKS Cluster, VPC & all associated resources (10 min)")
+        print("Please wait...........")
+        install_script = """
+        terraform -chdir=madzumo/terraform/aws destroy -auto-approve
+        """
+        ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
+        ssh_run.run_command(install_script)
+
+        print("Cluster & VPC removed")

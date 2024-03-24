@@ -18,7 +18,7 @@ module "madzumo-ops-vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.7.0"
 
-  name = "madzumo-vpc"
+  name = "madzumo-ops-vpc"
   cidr = var.vpc_cidr_block
   private_subnets = var.private_subnet_cidr_blocks
   public_subnets = var.public_subnet_cider_blocks

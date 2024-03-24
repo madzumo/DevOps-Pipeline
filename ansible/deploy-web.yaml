@@ -1,10 +1,36 @@
 ---
 - name: Apply Kubernetes YAML to EKS Cluster
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        kubeconfig: /home/ec2-user/.kube/config
+        state: present
+        kind: Namespace
+        name: madzumo-ops
+
     - name: Apply YAML
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         kubeconfig: /home/ec2-user/.kube/config
         state: present
         src: /home/ec2-user/madzumo/k8s/ecommerce.yaml
+        namespace: madzumo-ops
+
+    - name: Get details of the frontend service
+      kubernetes.core.k8s_info:
+        kubeconfig: /home/ec2-user/.kube/config
+        kind: Service
+        name: frontend
+        namespace: madzumo-ops
+      register: svc
+
+    - name: Check if external IP is available and output
+      ansible.builtin.debug:
+        msg: "External IP: {{ svc.resources[0].status.loadBalancer.ingress[0].ip }}"
+      when: "'ip' in svc.resources[0].status.loadBalancer.ingress[0]"
+
+    - name: Check if external hostname is available and output
+      ansible.builtin.debug:
+        msg: "External Hostname: {{ svc.resources[0].status.loadBalancer.ingress[0].hostname }}"
+      when: "'hostname' in svc.resources[0].status.loadBalancer.ingress[0]"
