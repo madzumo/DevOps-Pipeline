@@ -37,6 +37,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         print("Initialize Terraform")
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
+        terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
         print("Apply Terraform script")
         print("Waiting on cluster(10 min). Please wait.........")
