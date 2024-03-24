@@ -33,6 +33,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         aws configure set aws_access_key_id {self.key_id}
         aws configure set aws_secret_access_key {self.secret_id}
         aws configure set default.region {self.region}
+        terraform -chdir=madzumo/terraform/aws init
         """
         
         ssh_client = paramiko.SSHClient()
@@ -58,7 +59,7 @@ class OperatorEc2(ec2_config.Ec2Config):
     
     def terraform_eks_cluster_up(self):
         print("Deploying EKS Cluster")
-        while not self.get_eks_cluster_status ():
+        while not self.get_eks_cluster_status ('madzumo-ops-cluster'):
             print("Waitig for EKS Cluster to be Active...")
             sleep(20)
         

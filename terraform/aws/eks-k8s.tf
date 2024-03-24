@@ -9,8 +9,8 @@ module "eks" {
   
   #Item below is needed otherwise you'd have to add IAM user in ACCESS area of the cluster
   enable_cluster_creator_admin_permissions = true
-  subnet_ids = module.madzumo-vpc.private_subnets
-  vpc_id = module.madzumo-vpc.vpc_id
+  subnet_ids = module.madzumo-ops-vpc.private_subnets
+  vpc_id = module.madzumo-ops-vpc.vpc_id
 
    cluster_addons = {
     aws-ebs-csi-driver = {}
