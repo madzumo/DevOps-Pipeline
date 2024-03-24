@@ -1,6 +1,5 @@
 import python.aws_madzumo as aws_madzumo
 import python.operator as operator
-import os
 
 def main():
     # 1. Check & Setup AWS connection
@@ -21,14 +20,14 @@ def main():
     operator_instance.terraform_eks_cluster_up()
     
     # # 5. use Ansible to apply cluster with k8s ecommerce.yaml
-    # operator_instance.ansible_ecommerce_site_apply()
+    operator_instance.ansible_play_ecommerce()
     
     # # 6. Display Review of install to user
     # operator_instance.output_review()
     
     # # 7. Clean up all objections & remove instances
     # operator_instance.terraform_eks_cluster_down()
-    # # control_node_instance.delete_ec2_instance()
+    # operator_instance.delete_ec2_instance()
     
 if __name__ == "__main__":
     main()

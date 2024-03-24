@@ -16,6 +16,9 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ec2_instance_public_dnsname = ''
         self.ec2_instance_subnet_id = ''
         self.ec2_instance_vpc_id = ''
+        self.ssh_key_path = ''
+        self.ssh_username = 'ec2-user'
+        self.ssh_timeout = 60
         
     def create_ec2_instance(self, instance_name):
         """Creates Instance in Default VPC. Instance Name required."""
@@ -76,9 +79,9 @@ class Ec2Config(aws_madzumo.AWSbase):
                 self.ec2_instance_public_dnsname = response[0]['Instances'][0]['PublicDnsName']
                 self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
                 self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
+                self.ssh_key_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
         else:
             print(f"Unable to locate instance: {self.ec2_instance_name}")
-        
         
     def delete_all_ec2_instances_tag(self):
         response = self.get_all_instances_tag()

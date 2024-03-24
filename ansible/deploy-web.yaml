@@ -1,9 +1,10 @@
 ---
-- name: Deploy eCommerce application on Kubernetes
-  hosts: kubernetes-master
-  become: yes
+- name: Apply Kubernetes YAML to EKS Cluster
+  hosts: localhost
+  gather_facts: no
   tasks:
-    - name: Apply Kubernetes YAML file
-      kubectl:
-        src: k8s/ecommerce.yaml
+    - name: Apply YAML
+      community.kubernetes.k8s:
+        kubeconfig: /home/ec2-user/.kube/config
         state: present
+        src: /home/ec2-user/madzumo/k8s/ecommerce.yaml
