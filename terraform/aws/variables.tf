@@ -2,7 +2,7 @@
 #eks-k8s.tf (Kubernetes)
 #*********************************
 variable env_prefix {
-  default = "madzumo-demo"
+  default = "madzumo-ops"
 }
 variable k8s_version {
   default = "1.29"

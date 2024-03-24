@@ -12,7 +12,7 @@ def main():
 
     # 2. Create Operator Node Instance (Terraform & Ansible control node)
     operator_instance = operator.OperatorEc2()
-    operator_instance.create_ec2_instance('madzumo-operator-pepita')
+    operator_instance.create_ec2_instance('madzumo-ops')
     
     # 3. Install Terraform & Anssible on Operator Node
     operator_instance.deploy_terraform_ansible()
