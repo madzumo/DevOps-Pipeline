@@ -15,7 +15,7 @@ def main():
     operator_instance.create_ec2_instance('madzumo-operator-pepita')
     
     # 3. Install Terraform & Anssible on Operator Node
-    operator_instance.install_terraform_ansible()
+    operator_instance.deploy_terraform_ansible()
     
     # 4. use Terraform to deploy eks cluster
     operator_instance.terraform_eks_cluster_up()
