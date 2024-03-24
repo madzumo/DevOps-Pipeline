@@ -7,7 +7,7 @@ def main():
     aws_conn = aws_madzumo.AWSbase()
     
     while not aws_conn.check_aws_credentials():
-        aws_conn.get_aws_credentails()
+        aws_conn.input_aws_credentials()
         aws_conn.set_aws_env_vars()
 
     # 2. Create Operator Node Instance (Terraform & Ansible control node)

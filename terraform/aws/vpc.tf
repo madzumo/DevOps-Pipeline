@@ -14,7 +14,7 @@ locals {
   cluster_name = var.cluster_name 
 }
 
-module "madzumo-vpc" {
+module "madzumo-ops-vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.7.0"
 

@@ -8,7 +8,7 @@ variable k8s_version {
   default = "1.29"
 }
 variable cluster_name {
-  default = "madzumo-cluster"
+  default = "madzumo-ops-cluster"
 }
 variable region {
   default = "us-east-1"

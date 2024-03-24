@@ -1,0 +1,9 @@
+---
+- name: Deploy eCommerce application on Kubernetes
+  hosts: kubernetes-master
+  become: yes
+  tasks:
+    - name: Apply Kubernetes YAML file
+      kubectl:
+        src: k8s/ecommerce.yaml
+        state: present
