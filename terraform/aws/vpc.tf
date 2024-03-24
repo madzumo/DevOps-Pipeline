@@ -4,11 +4,21 @@ provider "aws" {
 
 data "aws_availability_zones" "azs" {}
 
-module "madzumo-demo-vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.6.0"
+#I'm not sure about this part
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
 
-  name = "madzumo-demo-vpc"
+locals {
+  cluster_name = var.cluster_name 
+}
+
+module "madzumo-vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.7.0"
+
+  name = "madzumo-vpc"
   cidr = var.vpc_cidr_block
   private_subnets = var.private_subnet_cidr_blocks
   public_subnets = var.public_subnet_cider_blocks
@@ -17,7 +27,18 @@ module "madzumo-demo-vpc" {
   single_nat_gateway = true
   enable_dns_hostnames = true
 
+  #required tags for VPC to connect to Kubernetes
   tags = {
-    "Name" = "madzumo-vpc"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+  }
+
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/elb" = 1
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb" = 1
   }
 }

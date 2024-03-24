@@ -48,3 +48,10 @@ class AWSbase:
                     self.region = input("Input Region (default: us-east-1):\n")
         except Exception as ex:
             print(f"Error getting aws credentials\n{ex}")
+    
+    def get_ARN_role_info ():
+        sts_client = boto3.client('sts')
+        response = sts_client.get_caller_identity()
+        # Extract role ARN
+        role_arn = response['Arn']
+        return role_arn

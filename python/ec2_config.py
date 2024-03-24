@@ -1,7 +1,8 @@
 import python.aws_madzumo as aws_madzumo
-import boto3
-import time
 import python.helper as helper
+import boto3
+import os
+from time import sleep
 
 class Ec2Config(aws_madzumo.AWSbase):
     def __init__(self, key_id='', secret_id='', region="us-east-1", instance_name = ''):
@@ -22,6 +23,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         
         if self.get_instance():
             print ("EC2 instance already present")
+            self.populate_ec2_instance(self.ec2_instance_name)
         else:
             self.create_security_group() 
             self.create_key_pair()
@@ -58,7 +60,8 @@ class Ec2Config(aws_madzumo.AWSbase):
             
             self.wait_for_instance_to_load()
             self.populate_ec2_instance(self.ec2_instance_name)
-                
+            print(f"EC2 Instance Ready. IP: {self.ec2_instance_public_ip}")
+            
     def populate_ec2_instance(self, instance_name):
         """Assign ec2 instnace to this object"""
         self.ec2_instance_name = instance_name
@@ -96,7 +99,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
             print(f"EC2 instance {self.ec2_instance_id} terminated.\n Waiting for completion...")
-            time.sleep(10)
+            sleep(10)
             
             self.delete_security_group()
             self.delete_key_pair()
@@ -220,10 +223,12 @@ class Ec2Config(aws_madzumo.AWSbase):
                 key_material = response['KeyMaterial']
                 with open(f"{self.ec2_instance_name}-keypair", 'w') as file:
                     file.write(key_material)
-                print("Key Pair created")
+                file_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
+                os.chmod(file_path, 0o600)
+                print(f"Created Key Pair: {self.ec2_instance_name}-keypair")
             except Exception as ex:
                 print(f"Error creating key pair:\n{ex}")
-    
+            
     def get_instance(self):
         response = self.ec2_client.describe_instances(
             Filters = [
@@ -279,7 +284,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         """Waits until Instance State = running and Instance Status = passed. Have Instance ID assigned."""
         while True:
             print (f"{helper._get_current_time()} Waiting for instance to initialize.....")
-            time.sleep(20)
+            sleep(20)
             new_response = self.ec2_client.describe_instance_status(InstanceIds=[self.ec2_instance_id])
             if new_response['InstanceStatuses']:
                 instance_state = new_response['InstanceStatuses'][0]['InstanceState']['Name']

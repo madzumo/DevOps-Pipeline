@@ -1,20 +1,17 @@
 #*********************************
-#Globals
+#eks-k8s.tf (Kubernetes)
 #*********************************
 variable env_prefix {
-  default = "madzumo_demo"
+  default = "madzumo-demo"
+}
+variable k8s_version {
+  default = "1.29"
+}
+variable cluster_name {
+  default = "madzumo-cluster"
 }
 variable region {
   default = "us-east-1"
-}
-variable "ssh_key_private_location" {
-  default = "~/.ssh/id_rsa"
-}
-variable "ec2_ssh_key_name" {
-  default = "nana"
-}
-variable "ec2_instance_type" {
-  default = "t3.large"
 }
 
 #*********************************
