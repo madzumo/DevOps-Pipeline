@@ -83,4 +83,4 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        print("Cluster & VPC removed")
+        print("All resources for madzumo-ops demo removed")

@@ -102,8 +102,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
             print(f"EC2 instance {self.ec2_instance_id} terminating.....")
-            sleep(10)
-            
+            self.wait_for_instance_to_terminate()
             self.delete_key_pair()
             self.delete_security_group()
             
@@ -133,10 +132,13 @@ class Ec2Config(aws_madzumo.AWSbase):
         return response
      
     def delete_security_group(self):
-        this_sg_id = self.get_security_group_id()
-        you_are_terminated = self.ec2_resource.SecurityGroup(this_sg_id)
-        you_are_terminated.delete()
-        print(f"Security Group {this_sg_id} terminated.")
+        try:
+            this_sg_id = self.get_security_group_id()
+            you_are_terminated = self.ec2_resource.SecurityGroup(this_sg_id)
+            you_are_terminated.delete()
+            print(f"Security Group {this_sg_id} terminated.")
+        except Exception as ex:
+            print(f"{ex}")
     
     def create_security_group(self):
         if self.get_security_group_id():
@@ -209,13 +211,13 @@ class Ec2Config(aws_madzumo.AWSbase):
             return
     
     def delete_key_pair(self):
-        response = self.get_key_pair_id()
-        if response['KeyPairs']:
-            you_are_terminated = self.ec2_resource.KeyPair(f"{self.ec2_instance_name}-keypair")
-            response = you_are_terminated.delete()
-            print(f"Key Pair {response['KeyPairId']} terminated.")
-        else:
-            print("No Key Pair found")
+        key_pair = self.ec2_resource.KeyPair(f"{self.ec2_instance_name}-keypair")
+        key_pair.delete()
+    
+        # self.ec2_resource.KeyPair.delete(key_pair_id=key_pair_id)
+        
+        print("Key Pair terminated.")
+        
             
     def create_key_pair(self):
         if self.get_key_pair_id():
@@ -296,5 +298,16 @@ class Ec2Config(aws_madzumo.AWSbase):
 
                 if instance_state == 'running' and instance_status == 'passed':
                     break
-                
+    
+    def wait_for_instance_to_terminate(self):
+        """Waits until Instance State = running and Instance Status = passed. Have Instance ID assigned."""
+        while True:
+            response = self.ec2_client.describe_instances(InstanceIds=[self.ec2_instance_id])
+            state = response['Reservations'][0]['Instances'][0]['State']['Name']
+            if state == 'terminated':
+                print(f"Instance: {self.ec2_instance_id} terminated.")
+                break
+            else:
+                print (f"{helper._get_current_time()} Waiting for instance:{self.ec2_instance_id} to Terminate.....")
+                sleep(20)
             
