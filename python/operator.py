@@ -1,15 +1,17 @@
 import python.ec2_config as ec2_config
-from os import getcwd
 from python.ssh_client import SSHClient
+from kubernetes import client, config
+import python.helper as helper
+import boto3
 
 class OperatorEc2(ec2_config.Ec2Config):
     def __init__(self, key_id='', secret_id='', region="us-east-1", instance_name=''):
         super().__init__(key_id, secret_id, region, instance_name)
         self.terraform_file_location = ''
         self.ansible_playbook_location = ''
-    
+
     def deploy_terraform_ansible (self):
-        print("Deploying Terraform and Ansible")
+        helper._display_message("Deploying Terraform and Ansible")
         self.get_aws_keys()
         
         install_script = f"""
@@ -37,15 +39,14 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
         
     def terraform_eks_cluster_up(self):
-        print("Initialize Terraform")
+        helper._display_message("Initialize Terraform")
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        print("Apply Terraform script")
-        print("Waiting on cluster(10 min). Please wait.........")
+        helper._display_message("Apply Terraform script\nWaiting on cluster(10 min). Please wait.........")
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
@@ -54,8 +55,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         
         
     def ansible_play_ecommerce(self):
-        print("Running Ansible Playbook on EKS Cluster")
-        # print(f"ansible-playbook -i {self.ec2_instance_public_ip} -e ansible_ssh_private_key_file={self.ssh_key_path} madzumo/ansible/deploy-web.yaml")
+        helper._display_message("Running Ansible Playbook on EKS Cluster")
         install_script =f"""
         ansible-galaxy collection install community.kubernetes
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
@@ -63,24 +63,94 @@ class OperatorEc2(ec2_config.Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
-        
+    
+    def get_web_front_end_hostname(self):
+        helper._display_message('Get FrondEnd Hostname')
+        # Load kube config from default location (e.g., ~/.kube/config)
+        config.load_kube_config()
+        # Create an instance of the API class
+        v1 = client.CoreV1Api()
+        # The name of the namespace and service you are looking for
+        namespace = "madzumo-ops"  # Adjust as needed
+        service_name = "frontend"  # Replace with your service's name
+
+        try:
+            # Query the service by name
+            service = v1.read_namespaced_service(name=service_name, namespace=namespace)
+            print(f"Service {service_name} details:")
+            print(f"UID: {service.metadata.uid}")
+            print(f"Service Type: {service.spec.type}")
+            print(f"Cluster IP: {service.spec.cluster_ip}")
+            
+            service_address = service.spec.cluster_ip
+            if service_address is None:
+                service_address = service.spec.external_ip
+            if service_address is None:
+                service_address = service.spec.load_balancer_ip
+            if service_address is None:
+                service_address = service.spec.external_name
+            print(f"{service_address}")
+            
+        except client.exceptions.ApiException as e:
+            print(f"An error occurred: {e}")
+    
+    def get_2(self):
+        # eks = boto3.client('eks')
+        # response = eks.describe_cluster(name="madzumo-ops-cluster")
+        # if response['cluster']:
+        #     print(response['cluster']['endpoint'])
+        self.configure_kubernetes_client()
+        helper._display_message('Get Eks Hostname')
+        print(self.get_service_hostname_or_ip("madzumo-ops","frontend"))
+    
     def output_review(self):
-        print("Output Review")
+        helper._display_message("Output Review")
     
     def terraform_eks_cluster_down(self):
-        print("Removing e-commerce site from EKS Cluster")
+        helper._display_message("Removing e-commerce site from EKS Cluster")
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        print("Removing EKS Cluster, VPC & all associated resources (10 min)")
-        print("Please wait...........")
+        helper._display_message("Removing EKS Cluster, VPC & all associated resources (10 min)")
         install_script = """
         terraform -chdir=madzumo/terraform/aws destroy -auto-approve
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        print("All resources for madzumo-ops demo removed")
+        helper._display_message("All resources for madzumo-ops demo removed")
+    
+    def configure_kubernetes_client(self):
+        helper._display_message('Config K8s client')
+        eks = boto3.client('eks')
+        
+        # Retrieve cluster information
+        cluster_info = eks.describe_cluster(name='madzumo-ops-cluster')['cluster']
+        api_server_url = cluster_info['endpoint']
+        certificate_authority_data = cluster_info['certificateAuthority']['data']
+        
+        # Configure the Kubernetes client
+        configuration = client.Configuration()
+        configuration.host = api_server_url
+        configuration.ssl_ca_cert = certificate_authority_data
+        
+        # Here, you need to set up the authentication token for Kubernetes.
+        # This is a placeholder for where you would add the token.
+        configuration.api_key['authorization'] = "Bearer <YOUR_TOKEN_HERE>"
+        
+        client.Configuration.set_default(configuration)
+    
+    def get_service_hostname_or_ip(self, namespace, service_name):
+        helper._display_message('Get Service Hostname')
+        v1 = client.CoreV1Api()
+        
+        try:
+            service = v1.read_namespaced_service(name=service_name, namespace=namespace)
+            hostname = service.spec.cluster_ip, service.status.load_balancer.ingress[0].hostname
+            return hostname
+        except Exception as e:
+            print(f"Error fetching service details: {e}")
+            return None, None

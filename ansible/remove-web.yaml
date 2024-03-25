@@ -1,7 +1,7 @@
 ---
 - name: Remove Kubernetes Resource
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Delete Kubernetes Deployment
       kubernetes.core.k8s:

@@ -25,10 +25,10 @@
         namespace: madzumo-ops
       register: svc
 
-    - name: Check if external IP is available and output
-      ansible.builtin.debug:
-        msg: "External IP: {{ svc.resources[0].status.loadBalancer.ingress[0].ip }}"
-      when: "'ip' in svc.resources[0].status.loadBalancer.ingress[0]"
+    # - name: Check if external IP is available and output
+    #   ansible.builtin.debug:
+    #     msg: "External IP: {{ svc.resources[0].status.loadBalancer.ingress[0].ip }}"
+    #   when: "'ip' in svc.resources[0].status.loadBalancer.ingress[0]"
 
     - name: Check if external hostname is available and output
       ansible.builtin.debug:
