@@ -1,7 +1,7 @@
 import python.ec2_config as ec2_config
 from python.ssh_client import SSHClient
 from kubernetes import client, config
-import python.helper as helper
+import python.helper_config as helper_config
 import boto3
 
 class OperatorEc2(ec2_config.Ec2Config):
@@ -12,7 +12,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         self.k8_website = ''
         
     def deploy_terraform_ansible (self):
-        helper._display_message("Deploying Terraform and Ansible")
+        helper_config._display_message("Deploying Terraform and Ansible")
         self.get_aws_keys()
         
         install_script = f"""
@@ -40,14 +40,14 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
         
     def terraform_eks_cluster_up(self):
-        helper._display_message("Initialize Terraform")
+        helper_config._display_message("Initialize Terraform")
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        helper._display_message("Apply Terraform script\nWaiting on cluster(10 min) Please Wait!")
+        helper_config._display_message("Apply Terraform script\nWaiting on cluster(10 min) Please Wait!")
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
@@ -56,7 +56,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         
         
     def ansible_play_ecommerce(self):
-        helper._display_message("Running Ansible Playbook on EKS Cluster")
+        helper_config._display_message("Running Ansible Playbook on EKS Cluster")
         install_script =f"""
         ansible-galaxy collection install community.kubernetes
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
@@ -66,7 +66,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
     
     def get_k8_service_hostname(self):
-        helper._display_message('Get FrondEnd Hostname')
+        helper_config._display_message('Get FrondEnd Hostname')
         # ***ONLY WORKS AFTER AWS KUBECONFIG SETUP ON LOCAL****
         config.load_kube_config()
         v1 = client.CoreV1Api()
@@ -94,7 +94,7 @@ class OperatorEc2(ec2_config.Ec2Config):
             print(f"An error occurred: {e}")
     
     def output_review(self):
-        helper._display_message("Output Review")
+        helper_config._display_message("Output Review")
         install_script ="""
         kubectl get svc frontend -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}' -n madzumo-ops
         """
@@ -105,24 +105,24 @@ class OperatorEc2(ec2_config.Ec2Config):
         ""
         
     def terraform_eks_cluster_down(self):
-        helper._display_message("Removing e-commerce site from EKS Cluster")
+        helper_config._display_message("Removing e-commerce site from EKS Cluster")
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        helper._display_message("Removing EKS Cluster & other resources (10 min)")
+        helper_config._display_message("Removing EKS Cluster & other resources (10 min)")
         install_script = """
         terraform -chdir=madzumo/terraform/aws destroy -auto-approve
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        helper._display_message("All resources for madzumo-ops cluster removed")
+        helper_config._display_message("All resources for madzumo-ops cluster removed")
     
     def configure_kubernetes_client(self):
-        helper._display_message('Config K8s client')
+        helper_config._display_message('Config K8s client')
         eks = boto3.client('eks')
         
         # Retrieve cluster information

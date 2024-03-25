@@ -2,7 +2,7 @@
 import os
 import boto3
 import configparser
-import python.helper as helper
+import python.helper_config as helper_config
 
 class AWSbase:
     def __init__(self, key_id='', secret_id='', region = "us-east-1"):
@@ -27,14 +27,14 @@ class AWSbase:
     
     def check_aws_credentials(self):
         try:
-            helper._display_message("Checking AWS connection......")
+            helper_config._display_message("Checking AWS connection......")
             aws_client= boto3.client('iam')
             user_details = aws_client.get_user()
             account_number = user_details['User']['Arn'].split(':')[4]
-            helper._display_message(f"AWS Credentials Found\nAccount:{account_number}")
+            helper_config._display_message(f"AWS Credentials Found\nAccount:{account_number}")
             return True
         except Exception:
-            helper._display_message("AWS credentials are invalid or missing")
+            helper_config._display_message("AWS credentials are invalid or missing")
             return False
     
     def input_aws_credentials(self):
@@ -49,7 +49,7 @@ class AWSbase:
                 else:
                     self.region = input("Input Region (default: us-east-1):\n")
         except Exception as ex:
-            helper._display_message(f"Error getting aws credentials\n{ex}")
+            helper_config._display_message(f"Error getting aws credentials\n{ex}")
     
     def get_ARN_role_info (self):
         sts_client = boto3.client('sts')
@@ -85,6 +85,6 @@ class AWSbase:
                 else:
                     return False
         except Exception as ex:
-            helper._display_message(f"Error: {ex}")
+            helper_config._display_message(f"Error: {ex}")
             return True
            

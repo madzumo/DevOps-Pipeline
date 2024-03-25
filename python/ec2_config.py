@@ -1,5 +1,5 @@
 import python.aws_madzumo as aws_madzumo
-import python.helper as helper
+import python.helper_config as helper_config
 import boto3
 import os
 from time import sleep
@@ -25,7 +25,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ec2_instance_name = instance_name
         
         if self.get_instance():
-            helper._display_message("EC2 instance already present")
+            helper_config._display_message("EC2 instance already present")
             self.populate_ec2_instance(self.ec2_instance_name)
         else:
             self.create_security_group() 
@@ -58,7 +58,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 print(f"EC2 Instance Created: {resultx}")
                 self.ec2_instance_id = resultx
             except Exception as ex:
-                helper._display_message(f"Error creating Instance:\n{ex}")
+                helper_config._display_message(f"Error creating Instance:\n{ex}")
                 return
             
             self.wait_for_instance_to_load()
@@ -71,7 +71,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         response = self.get_instance()
         if response:
             if response[0]['Instances'][0]['State']['Name'] != 'running':
-                helper._display_message(f"Error: Instance in {response[0]['Instances'][0]['State']['Name']} state")
+                helper_config._display_message(f"Error: Instance in {response[0]['Instances'][0]['State']['Name']} state")
             else:
                 self.ec2_instance_id = response[0]['Instances'][0]['InstanceId']
                 self.ec2_instance_public_ip = response[0]['Instances'][0]['PublicIpAddress']
@@ -81,7 +81,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
                 self.ssh_key_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
         else:
-            helper._display_message(f"Unable to locate instance: {self.ec2_instance_name}")
+            helper_config._display_message(f"Unable to locate instance: {self.ec2_instance_name}")
         
     def delete_all_ec2_instances_tag(self):
         response = self.get_all_instances_tag()
@@ -93,13 +93,13 @@ class Ec2Config(aws_madzumo.AWSbase):
                     print(f"EC2 instance {instancex['InstanceId']} terminated.\n Waiting for completion...")
                     # time.sleep(10)
         else:
-            helper._display_message(f"No Instance found for Tag-> {self.tag_identity_key}:{self.tag_identity_value}")
+            helper_config._display_message(f"No Instance found for Tag-> {self.tag_identity_key}:{self.tag_identity_value}")
     
     def delete_ec2_instance(self):
         if self.ec2_instance_id == '':
             print("Error: EC2 instance id needed")
         else:
-            helper._display_message("Terminating Operator Node")
+            helper_config._display_message("Terminating Operator Node")
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
             print(f"EC2 instance {self.ec2_instance_id} terminating.....")
@@ -137,13 +137,13 @@ class Ec2Config(aws_madzumo.AWSbase):
             this_sg_id = self.get_security_group_id()
             you_are_terminated = self.ec2_resource.SecurityGroup(this_sg_id)
             you_are_terminated.delete()
-            helper._display_message(f"Security Group {this_sg_id} terminated.")
+            helper_config._display_message(f"Security Group {this_sg_id} terminated.")
         except Exception as ex:
             print(f"{ex}")
     
     def create_security_group(self):
         if self.get_security_group_id():
-            helper._display_message("Security Group present")
+            helper_config._display_message("Security Group present")
         else:
             sg_madzumo = self.ec2_client.create_security_group(
                 GroupName = f"{self.ec2_instance_name}-sg",
@@ -195,7 +195,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                     }
                 ]
             )
-            helper._display_message(f"Created Security Group: {self.ec2_instance_name}-sg")
+            helper_config._display_message(f"Created Security Group: {self.ec2_instance_name}-sg")
     
     def get_key_pair_id(self):
         response = self.ec2_client.describe_key_pairs(
@@ -217,12 +217,12 @@ class Ec2Config(aws_madzumo.AWSbase):
     
         # self.ec2_resource.KeyPair.delete(key_pair_id=key_pair_id)
         
-        helper._display_message("Key Pair terminated.")
+        helper_config._display_message("Key Pair terminated.")
         
             
     def create_key_pair(self):
         if self.get_key_pair_id():
-            helper._display_message("Key Pair Present")
+            helper_config._display_message("Key Pair Present")
         else:
             try:
                 response = self.ec2_client.create_key_pair(KeyName = f"{self.ec2_instance_name}-keypair")
@@ -231,9 +231,9 @@ class Ec2Config(aws_madzumo.AWSbase):
                     file.write(key_material)
                 file_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
                 os.chmod(file_path, 0o600)
-                helper._display_message(f"Created Key Pair: {self.ec2_instance_name}-keypair")
+                helper_config._display_message(f"Created Key Pair: {self.ec2_instance_name}-keypair")
             except Exception as ex:
-                helper._display_message(f"Error creating key pair:\n{ex}")
+                helper_config._display_message(f"Error creating key pair:\n{ex}")
             
     def get_instance(self):
         response = self.ec2_client.describe_instances(
@@ -289,7 +289,7 @@ class Ec2Config(aws_madzumo.AWSbase):
     def wait_for_instance_to_load(self):
         """Waits until Instance State = running and Instance Status = passed. Have Instance ID assigned."""
         while True:
-            print(f"{helper._get_current_time()} Waiting for instance to initialize.....")
+            print(f"{helper_config._get_current_time()} Waiting for instance to initialize.....")
             sleep(20)
             new_response = self.ec2_client.describe_instance_status(InstanceIds=[self.ec2_instance_id])
             if new_response['InstanceStatuses']:
@@ -304,9 +304,9 @@ class Ec2Config(aws_madzumo.AWSbase):
             response = self.ec2_client.describe_instances(InstanceIds=[self.ec2_instance_id])
             state = response['Reservations'][0]['Instances'][0]['State']['Name']
             if state == 'terminated':
-                helper._display_message(f"Instance: {self.ec2_instance_id} terminated.")
+                helper_config._display_message(f"Instance: {self.ec2_instance_id} terminated.")
                 break
             else:
-                print (f"{helper._get_current_time()} Waiting for instance:{self.ec2_instance_id} to Terminate.....")
+                print (f"{helper_config._get_current_time()} Waiting for instance:{self.ec2_instance_id} to Terminate.....")
                 sleep(20)
             

@@ -1,4 +1,4 @@
-import aws_madzumo
+import python.aws_madzumo as aws_madzumo
 import boto3
 
 class S3config(aws_madzumo.AWSbase):

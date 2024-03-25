@@ -5,8 +5,8 @@ operator_instance = operator.OperatorEc2()
 
 def main():
     check_aws_connection()
-    setup_the_show()
-    show_output()
+    # setup_the_show()
+    # show_output()
     # clean_up_remove()
     
 def check_aws_connection():
