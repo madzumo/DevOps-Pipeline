@@ -9,7 +9,8 @@ class SSHClient:
         self.ssh_key_file = keyfile
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
+        self.command_output = ''
+        
     def _connect_open(self):
         try:
             self.client.connect(self.hostname, username=self.username, key_filename=self.ssh_key_file)
@@ -49,7 +50,8 @@ class SSHClient:
     def _execute_command(self):
         try:
             stdin, stdout, stderr = self.client.exec_command(self.shell_command)
-            print(stdout.read().decode())
+            self.command_output = stdout.read().decode()
+            print(self.command_output)
             print(stderr.read().decode())
         except Exception as ex:
             print(f"An error occurred: {ex}")

@@ -55,7 +55,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                         }
                     ]
                 )[0].id
-                helper._display_message(f"EC2 Instance Created: {resultx}")
+                print(f"EC2 Instance Created: {resultx}")
                 self.ec2_instance_id = resultx
             except Exception as ex:
                 helper._display_message(f"Error creating Instance:\n{ex}")
@@ -63,7 +63,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             
             self.wait_for_instance_to_load()
             self.populate_ec2_instance(self.ec2_instance_name)
-            helper._display_message(f"EC2 Instance Ready. IP: {self.ec2_instance_public_ip}")
+            print(f"EC2 Instance Ready. IP: {self.ec2_instance_public_ip}")
             
     def populate_ec2_instance(self, instance_name):
         """Assign ec2 instnace to this object"""
@@ -97,12 +97,12 @@ class Ec2Config(aws_madzumo.AWSbase):
     
     def delete_ec2_instance(self):
         if self.ec2_instance_id == '':
-            helper._display_message("Error: EC2 instance id needed")
+            print("Error: EC2 instance id needed")
         else:
             helper._display_message("Terminating Operator Node")
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
-            helper._display_message(f"EC2 instance {self.ec2_instance_id} terminating.....")
+            print(f"EC2 instance {self.ec2_instance_id} terminating.....")
             self.wait_for_instance_to_terminate()
             self.delete_key_pair()
             self.delete_security_group()
@@ -289,7 +289,7 @@ class Ec2Config(aws_madzumo.AWSbase):
     def wait_for_instance_to_load(self):
         """Waits until Instance State = running and Instance Status = passed. Have Instance ID assigned."""
         while True:
-            helper._display_message(f"{helper._get_current_time()} Waiting for instance to initialize.....")
+            print(f"{helper._get_current_time()} Waiting for instance to initialize.....")
             sleep(20)
             new_response = self.ec2_client.describe_instance_status(InstanceIds=[self.ec2_instance_id])
             if new_response['InstanceStatuses']:

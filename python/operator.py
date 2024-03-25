@@ -9,7 +9,8 @@ class OperatorEc2(ec2_config.Ec2Config):
         super().__init__(key_id, secret_id, region, instance_name)
         self.terraform_file_location = ''
         self.ansible_playbook_location = ''
-
+        self.k8_website = ''
+        
     def deploy_terraform_ansible (self):
         helper._display_message("Deploying Terraform and Ansible")
         self.get_aws_keys()
@@ -46,7 +47,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        helper._display_message("Apply Terraform script\nWaiting on cluster(10 min). Please wait.........")
+        helper._display_message("Apply Terraform script\nWaiting on cluster(10 min) Please Wait!")
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
@@ -64,13 +65,11 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
     
-    def get_web_front_end_hostname(self):
+    def get_k8_service_hostname(self):
         helper._display_message('Get FrondEnd Hostname')
-        # Load kube config from default location (e.g., ~/.kube/config)
+        # ***ONLY WORKS AFTER AWS KUBECONFIG SETUP ON LOCAL****
         config.load_kube_config()
-        # Create an instance of the API class
         v1 = client.CoreV1Api()
-        # The name of the namespace and service you are looking for
         namespace = "madzumo-ops"  # Adjust as needed
         service_name = "frontend"  # Replace with your service's name
 
@@ -94,18 +93,17 @@ class OperatorEc2(ec2_config.Ec2Config):
         except client.exceptions.ApiException as e:
             print(f"An error occurred: {e}")
     
-    def get_2(self):
-        # eks = boto3.client('eks')
-        # response = eks.describe_cluster(name="madzumo-ops-cluster")
-        # if response['cluster']:
-        #     print(response['cluster']['endpoint'])
-        self.configure_kubernetes_client()
-        helper._display_message('Get Eks Hostname')
-        print(self.get_service_hostname_or_ip("madzumo-ops","frontend"))
-    
     def output_review(self):
         helper._display_message("Output Review")
-    
+        install_script ="""
+        kubectl get svc frontend -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}' -n madzumo-ops
+        """
+        ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
+        ssh_run.run_command(install_script)
+        self.k8_website = f"http://{ssh_run.command_output}"
+        # print(self.k8_website)
+        ""
+        
     def terraform_eks_cluster_down(self):
         helper._display_message("Removing e-commerce site from EKS Cluster")
         install_script = """
@@ -114,14 +112,14 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
         
-        helper._display_message("Removing EKS Cluster, VPC & all associated resources (10 min)")
+        helper._display_message("Removing EKS Cluster & other resources (10 min)")
         install_script = """
         terraform -chdir=madzumo/terraform/aws destroy -auto-approve
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip,self.ssh_username,self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        helper._display_message("All resources for madzumo-ops demo removed")
+        helper._display_message("All resources for madzumo-ops cluster removed")
     
     def configure_kubernetes_client(self):
         helper._display_message('Config K8s client')
@@ -143,14 +141,3 @@ class OperatorEc2(ec2_config.Ec2Config):
         
         client.Configuration.set_default(configuration)
     
-    def get_service_hostname_or_ip(self, namespace, service_name):
-        helper._display_message('Get Service Hostname')
-        v1 = client.CoreV1Api()
-        
-        try:
-            service = v1.read_namespaced_service(name=service_name, namespace=namespace)
-            hostname = service.spec.cluster_ip, service.status.load_balancer.ingress[0].hostname
-            return hostname
-        except Exception as e:
-            print(f"Error fetching service details: {e}")
-            return None, None
