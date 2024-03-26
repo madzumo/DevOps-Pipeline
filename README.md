@@ -1,9 +1,10 @@
 # DevOps CI/CD Pipeline Demo
 
 **FULLY automated** CI/CD pipeline using various DevOps technologies. 
-This deploys a microservice e-commerce application into a Kubernetes cluster in AWS. 
+This deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS. The application is a web-based e-commerce app where users can 
+browse items, add them to the cart, and purchase them.
 
-Showcasing these technologies: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, Terraform, Ansible, Prometheus & Python.
+Showcasing these skills: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
 ## What Does it do Exactly?
 
@@ -16,7 +17,7 @@ new K8s images and pushes them to the newly created EKS cluster.
 In this demo, the majority of Jenkins work is being performed by this utility
 using Python. For the purpose of this demonstration Jenkins is installed to create the Docker containers only but this is
 an overview explanation of how the CI/CD pipeline would normally function in a private environment. The end result is the deployment of a microservice
-e-commerce web application. Below are all the individual application services that will get installed as containers in the custom Kubernetes environment. 
+e-commerce web application from scratch **Fully Automated**. Below are all the individual application services that will get installed as containers in the custom Kubernetes environment. 
 
 ![micro_service](media/microsevice.png)
 
