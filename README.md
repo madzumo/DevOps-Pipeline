@@ -30,9 +30,7 @@ on your workstation.
 
 ## Download 
 
-[DevOps Demo - Windows](media/devops_demo.zip)
-
-[DevOps Demo - Linux](media/devops_demo_linux.zip)
+[DevOps Demo - Windows](media/madzumo_devops.zip)
 
 ## How to use
 

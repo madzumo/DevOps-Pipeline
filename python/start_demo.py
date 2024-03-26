@@ -78,6 +78,7 @@ def setup_the_show():
     hc.console_message(['Pipeline Complete!'], hc.ConsoleColors.title)
     hc.pause_console()
     hc.clear_console()
+    hc.console_message(['Getting Status'], hc.ConsoleColors.title)
     status_of_the_show()
 
 
