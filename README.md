@@ -6,7 +6,7 @@ browse items, add them to the cart, and purchase them.
 
 Showcasing these skills: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
-## What Does it do Exactly?
+## What Does It Do?
 
 The flow starts with this repo using code in the `src` folder. Once a change is committed to the `main` branch it
 triggers Jenkins to retrieve a copy of the repo, build each service in Docker containers, upload the images to a docker 
