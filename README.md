@@ -8,7 +8,7 @@ Showcasing these skills: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, 
 
 ## What Does It Do?
 
-The flow starts with this repo using code in the `src` folder. Once a change is committed to the `main` branch it
+The flow starts with in this repo using an app in the `src` folder. Once a change is committed to the `main` branch it
 triggers Jenkins to retrieve a copy of the repo, build each service in Docker containers, upload the images to a docker 
 registry and triggers Terraform. Terraform builds the infrastructure for the application which includes a custom VPC, EKS cluster 
 S3 bucket, several EC2 instances & all security components. Once Terraform is complete, Ansible reads the
