@@ -17,13 +17,13 @@
         src: /home/ec2-user/madzumo/k8s/ecommerce.yaml
         namespace: madzumo-ops
 
-    - name: Get details of the frontend service
-      kubernetes.core.k8s_info:
-        kubeconfig: /home/ec2-user/.kube/config
-        kind: Service
-        name: frontend
-        namespace: madzumo-ops
-      register: svc
+#    - name: Get details of the frontend service
+#      kubernetes.core.k8s_info:
+#        kubeconfig: /home/ec2-user/.kube/config
+#        kind: Service
+#        name: frontend
+#        namespace: madzumo-ops
+#      register: svc
 
     # - name: Check if external IP is available and output
     #   ansible.builtin.debug:
