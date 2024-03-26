@@ -14,10 +14,11 @@ class AWSbase:
         self.tag_identity_key = 'madzumo'
         self.tag_identity_value = 'demo'
         self.instance_ami = 'ami-0c101f26f147fa7fd'
-        self.aws_account = ''
+        self.aws_account_number = ''
 
     def set_aws_env_vars(self):
         try:
+            hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
             self.key_id = input("Input AWS ACCESS KeY ID:\n")
             self.secret_id = input("Input AWS SECRET Key ID:\n")
             os.environ['AWS_ACCESS_KEY_ID'] = self.key_id
@@ -26,10 +27,11 @@ class AWSbase:
                 os.environ['AWS_DEFAULT_REGION'] = self.region
             return True
         except Exception as ex:
-            hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error.value)
+            hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error)
             return False
 
-    def show_aws_env_vars(self):
+    @staticmethod
+    def show_aws_env_vars():
         print(f"Access:{os.environ.get('AWS_ACCESS_KEY_ID')} ")
         print(f"Secret:{os.environ.get('AWS_SECRET_ACCESS_KEY')} ")
         print(f"Region:{os.environ.get('AWS_DEFAULT_REGION')} ")
@@ -37,21 +39,21 @@ class AWSbase:
     def check_aws_credentials(self, show_result=True):
         try:
             if show_result:
-                hc.console_message(["Checking AWS connection"], hc.ConsoleColors.info.value)
+                hc.console_message(["Test AWS connection"], hc.ConsoleColors.info)
             aws_client = boto3.client('iam')
             user_details = aws_client.get_user()
             account_number = user_details['User']['Arn'].split(':')[4]
-            self.aws_account = account_number
+            self.aws_account_number = account_number
             credentials = boto3.Session().get_credentials()
             self.key_id = credentials.access_key
             self.secret_id = credentials.secret_key
             if show_result:
-                hc.console_message(["AWS Credentials valid", f"Account:{self.aws_account}"],
-                                   hc.ConsoleColors.info.value)
+                hc.console_message(["AWS Credentials valid", f"Account:{self.aws_account_number}"],
+                                   hc.ConsoleColors.info)
             return True
         except Exception as ex:
             if show_result:
-                hc.console_message(["AWS Configuration not present"], hc.ConsoleColors.error.value)
+                hc.console_message(["AWS Configuration not present"], hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):
@@ -88,5 +90,5 @@ class AWSbase:
                 else:
                     return False
         except Exception as ex:
-            hc.console_message(["Error:", f"{ex}"], hc.ConsoleColors.error.value)
+            hc.console_message(["Error:", f"{ex}"], hc.ConsoleColors.error)
             return True

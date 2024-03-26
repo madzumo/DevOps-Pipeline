@@ -3,7 +3,7 @@ import helper_config as hc
 import boto3
 import os
 from time import sleep
-import subprocess
+import s3_config
 
 
 class Ec2Config(aws_madzumo.AWSbase):
@@ -20,14 +20,14 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ec2_instance_vpc_id = ''
         self.ssh_key_path = ''
         self.ssh_key_pair_name = f"{instance_name}-keypair"
-        self.ssh_key_material = ''
+        self.s3_temp_bucket = ''
         self.ssh_username = 'ec2-user'
         self.ssh_timeout = 60
 
     def create_ec2_instance(self):
         """Creates Instance in Default VPC. Instance Name required."""
         if self.get_instance():
-            hc.console_message(["EC2 instance already present"], hc.ConsoleColors.info.value)
+            hc.console_message(["EC2 instance already present"], hc.ConsoleColors.info)
             self.populate_ec2_instance()
         else:
             self.create_security_group()
@@ -57,10 +57,10 @@ class Ec2Config(aws_madzumo.AWSbase):
                         }
                     ]
                 )[0].id
-                hc.console_message(["EC2 Instance Created:", f"{results}"], hc.ConsoleColors.info.value)
+                hc.console_message([f"EC2 Instance Created:{self.ec2_instance_name}"], hc.ConsoleColors.info)
                 self.ec2_instance_id = results
             except Exception as ex:
-                hc.console_message(["Error creating Instance:", f"{ex}"], hc.ConsoleColors.error.value)
+                hc.console_message([f"Error creating Instance:{ex}"], hc.ConsoleColors.error)
                 return
 
             self.wait_for_instance_to_load()
@@ -75,7 +75,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 if show_result:
                     hc.console_message(
                         [f"Error: Instance in {response[0]['Instances'][0]['State']['Name']} state"],
-                        hc.ConsoleColors.error.value)
+                        hc.ConsoleColors.error)
             else:
                 self.ec2_instance_id = response[0]['Instances'][0]['InstanceId']
                 self.ec2_instance_public_ip = response[0]['Instances'][0]['PublicIpAddress']
@@ -84,12 +84,13 @@ class Ec2Config(aws_madzumo.AWSbase):
                 self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
                 self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
                 self.ssh_key_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
+                self.download_key_pair()
                 if show_result:
-                    hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info.value)
+                    hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info)
         else:
             if show_result:
                 hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
-                                   hc.ConsoleColors.info.value)
+                                   hc.ConsoleColors.info)
 
     def delete_all_ec2_instances_tag(self):
         response = self.get_all_instances_tag()
@@ -103,13 +104,13 @@ class Ec2Config(aws_madzumo.AWSbase):
         else:
             hc.console_message(
                 [f"No Instance found for Tag-> {self.tag_identity_key}:{self.tag_identity_value}"],
-                hc.ConsoleColors.info.value)
+                hc.ConsoleColors.info)
 
     def delete_ec2_instance(self):
         if self.ec2_instance_id == '':
             print("Error: EC2 instance id needed")
         else:
-            hc.console_message(["Terminating Operator Node"], hc.ConsoleColors.info.value)
+            hc.console_message(["Terminating Operator Node"], hc.ConsoleColors.info)
             you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
             you_are_terminated.terminate()
             print(f"EC2 instance {self.ec2_instance_id} terminating.....")
@@ -136,13 +137,13 @@ class Ec2Config(aws_madzumo.AWSbase):
             this_sg_id = self.get_security_group_id()
             you_are_terminated = self.ec2_resource.SecurityGroup(this_sg_id)
             you_are_terminated.delete()
-            hc.console_message([f"Security Group {this_sg_id} terminated."], hc.ConsoleColors.info.value)
+            hc.console_message([f"Security Group {this_sg_id} terminated."], hc.ConsoleColors.info)
         except Exception as ex:
             print(f"{ex}")
 
     def create_security_group(self):
         if self.get_security_group_id():
-            hc.console_message(["Security Group present"], hc.ConsoleColors.info.value)
+            hc.console_message(["Security Group present"], hc.ConsoleColors.info)
         else:
             sg_madzumo = self.ec2_client.create_security_group(
                 GroupName=f"{self.ec2_instance_name}-sg",
@@ -195,7 +196,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 ]
             )
             hc.console_message([f"Created Security Group: {self.ec2_instance_name}-sg"],
-                               hc.ConsoleColors.info.value)
+                               hc.ConsoleColors.info)
 
     def get_key_pair_id(self):
         response = self.ec2_client.describe_key_pairs(
@@ -217,25 +218,25 @@ class Ec2Config(aws_madzumo.AWSbase):
 
         # self.ec2_resource.KeyPair.delete(key_pair_id=key_pair_id)
 
-        hc.console_message(["Key Pair terminated"], hc.ConsoleColors.info.value)
+        hc.console_message(["Key Pair terminated"], hc.ConsoleColors.info)
 
     def create_key_pair(self):
         if self.get_key_pair_id():
-            hc.console_message(["Key Pair Present"], hc.ConsoleColors.info.value)
+            hc.console_message(["Key Pair Present"], hc.ConsoleColors.info)
         else:
             try:
                 response = self.ec2_client.create_key_pair(KeyName=f"{self.ec2_instance_name}-keypair")
-                self.ssh_key_material = response['KeyMaterial']
-                # key_material = response['KeyMaterial']
-                # with open(f"{self.ec2_instance_name}-keypair", 'w') as file:
-                #     file.write(key_material)
-                # file_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
-                # os.chmod(file_path, 0o600)
+                # self.ssh_key_material = response['KeyMaterial']
+                key_material = response['KeyMaterial']
+                with open(f"{self.ec2_instance_name}-keypair", 'w') as file:
+                    file.write(key_material)
+                file_path = f"{os.getcwd()}/{self.ec2_instance_name}-keypair"
+                os.chmod(file_path, 0o600)
                 hc.console_message([f"Created Key Pair: {self.ec2_instance_name}-keypair"],
-                                   hc.ConsoleColors.info.value)
-                self.download_key_pair()
+                                   hc.ConsoleColors.info)
+                self.upload_key_pair()
             except Exception as ex:
-                hc.console_message([f"Error creating key pair:", f"{ex}"], hc.ConsoleColors.error.value)
+                hc.console_message([f"Error creating key pair:", f"{ex}"], hc.ConsoleColors.error)
 
     def get_instance(self):
         response = self.ec2_client.describe_instances(
@@ -292,7 +293,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         """Waits until Instance State = running and Instance Status = passed. Have Instance ID assigned."""
         while True:
             hc.console_message([f"{hc.get_current_time()} Waiting for instance to initialize....."],
-                               hc.ConsoleColors.basic.value)
+                               hc.ConsoleColors.basic)
             sleep(20)
             new_response = self.ec2_client.describe_instance_status(InstanceIds=[self.ec2_instance_id])
             if new_response['InstanceStatuses']:
@@ -308,12 +309,12 @@ class Ec2Config(aws_madzumo.AWSbase):
             state = response['Reservations'][0]['Instances'][0]['State']['Name']
             if state == 'terminated':
                 hc.console_message([f"Instance: {self.ec2_instance_id} terminated."],
-                                   hc.ConsoleColors.info.value)
+                                   hc.ConsoleColors.info)
                 break
             else:
                 hc.console_message(
                     [f"{hc.get_current_time()} Waiting for instance:{self.ec2_instance_id} to Terminate....."],
-                    hc.ConsoleColors.basic.value)
+                    hc.ConsoleColors.basic)
                 sleep(20)
 
     def download_key_pair(self):
@@ -321,12 +322,30 @@ class Ec2Config(aws_madzumo.AWSbase):
             file_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
 
             if os.path.exists(file_path):
-                return
+                return True
 
-            with open(f"{self.ec2_instance_name}-keypair", 'w') as file:
-                file.write(self.ssh_key_material)
+            s3_setup = s3_config.S3config(self.s3_temp_bucket)
+            s3_setup.download_file_from_bucket(self.ssh_key_pair_name, file_path)
 
             os.chmod(file_path, 0o600)
-            hc.console_message(['Downloaded PEM file'], hc.ConsoleColors.info.value)
+            hc.console_message(['Downloaded Key Pair file'], hc.ConsoleColors.info)
+            return True
         except Exception as e:
-            hc.console_message(['Error download key pair', f"{e}"], hc.ConsoleColors.info.value)
+            hc.console_message(['Error downloading key pair', f"{e}"], hc.ConsoleColors.info)
+            return False
+
+    def upload_key_pair(self):
+        try:
+            file_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
+            s3_setup = s3_config.S3config(self.s3_temp_bucket)
+            if os.path.exists(file_path):
+                s3_setup.upload_file_to_bucket(self.ssh_key_pair_name, file_path)
+            else:
+                hc.console_message(['Unable to find key pair file to upload to S3',
+                                    'Pipeline can still continue but PLEASE keep Key Pair file in the same directory'
+                                    'as this utility',
+                                    'Otherwise you will lose connectivity to the pipeline'], hc.ConsoleColors.warning)
+        except Exception as ex:
+            hc.console_message([f"Error:{ex}", "Pipeline can continue but PLEASE keep the Key Pair file in "
+                                "the the same directory with his utility", "Otherwise you will lose "
+                                "connectivity to the pipeline"], hc.ConsoleColors.error)

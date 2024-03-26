@@ -15,11 +15,11 @@ class OperatorEc2(ec2_config.Ec2Config):
         self.ansible_playbook_location = ''
         self.k8_website = ''
         self.ansible = ''
-        self.prometheus = ''
-        self.jenkins = ''
+        self.prometheus = 'coming soon'
+        self.jenkins = 'coming soon'
 
     def deploy_terraform_ansible(self):
-        hc.console_message(["Deploying Terraform and Ansible"], hc.ConsoleColors.info.value)
+        hc.console_message(["Deploying Terraform and Ansible"], hc.ConsoleColors.info)
         self.get_aws_keys()
 
         install_script = f"""
@@ -47,7 +47,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
 
     def terraform_eks_cluster_up(self):
-        hc.console_message(["Initialize Terraform"], hc.ConsoleColors.info.value)
+        hc.console_message(["Initialize Terraform"], hc.ConsoleColors.info)
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
         """
@@ -55,7 +55,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
 
         hc.console_message(["Apply Terraform script", "Waiting on cluster(10 min) Please Wait!"],
-                           hc.ConsoleColors.info.value)
+                           hc.ConsoleColors.info)
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
@@ -63,7 +63,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
 
     def ansible_play_ecommerce(self):
-        hc.console_message(["Running Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info.value)
+        hc.console_message(["Running Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
         install_script = f"""
         ansible-galaxy collection install community.kubernetes
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
@@ -73,7 +73,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
 
     def get_k8_service_hostname(self):
-        hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info.value)
+        hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)
         # ***ONLY WORKS AFTER AWS KUBECONFIG SETUP ON LOCAL****
         config.load_kube_config()
         v1 = client.CoreV1Api()
@@ -131,7 +131,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         aws_conn_info = ''
         if self.check_aws_credentials(show_result=False):
             aws_conn_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'              Account: ' + self.aws_account + "\n"
+            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'              Account: ' + self.aws_account_number + "\n"
             aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'               Key ID: ' + self.key_id + "\n"
             aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'            Secret ID: ' + self.secret_id
 
@@ -143,6 +143,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         if self.get_instance() and self.get_web_url():
             pipeline_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'      e-commerce site: ' + self.k8_website + "\n"
+            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'     K8s Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'      Ansible console: ' + self.ec2_instance_public_ip + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   Prometheus Monitor: ' + self.prometheus + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
@@ -164,7 +165,7 @@ class OperatorEc2(ec2_config.Ec2Config):
             # print(self.ssh_username)
             # print(self.ssh_key_path)
             ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
-            ssh_run.run_command(install_script)
+            ssh_run.run_command(install_script, show_output=False)
             self.k8_website = f"http://{ssh_run.command_output}"
             return True
         except Exception as ex:
@@ -172,38 +173,20 @@ class OperatorEc2(ec2_config.Ec2Config):
             return False
 
     def terraform_eks_cluster_down(self):
-        hc.console_message(["Removing e-commerce site from EKS Cluster"], hc.ConsoleColors.info.value)
+        hc.console_message(["Removing e-commerce site from EKS Cluster"], hc.ConsoleColors.info)
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
         ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
         time.sleep(10)
-        hc.console_message(["Removing EKS Cluster & other resources (10 min)"], hc.ConsoleColors.info.value)
+        hc.console_message(["Removing EKS Cluster & other resources (10 min)", "Please Wait!"],
+                           hc.ConsoleColors.info)
         install_script = """
         terraform -chdir=madzumo/terraform/aws destroy -auto-approve
         """
         ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        hc.console_message(["All resources for madzumo-ops cluster removed"], hc.ConsoleColors.info.value)
+        hc.console_message(["All resources for EKS cluster removed"], hc.ConsoleColors.info)
 
-    def configure_kubernetes_client(self):
-        hc.console_message(['Config K8s client'], hc.ConsoleColors.info.value)
-        eks = boto3.client('eks')
-
-        # Retrieve cluster information
-        cluster_info = eks.describe_cluster(name='madzumo-ops-cluster')['cluster']
-        api_server_url = cluster_info['endpoint']
-        certificate_authority_data = cluster_info['certificateAuthority']['data']
-
-        # Configure the Kubernetes client
-        configuration = client.Configuration()
-        configuration.host = api_server_url
-        configuration.ssl_ca_cert = certificate_authority_data
-
-        # Here, you need to set up the authentication token for Kubernetes.
-        # This is a placeholder for where you would add the token.
-        configuration.api_key['authorization'] = "Bearer <YOUR_TOKEN_HERE>"
-
-        client.Configuration.set_default(configuration)
