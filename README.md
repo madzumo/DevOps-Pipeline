@@ -1,22 +1,22 @@
 # DevOps CI/CD Pipeline Demo
 
-Full CI/CD pipeline showcasing various DevOps technologies. 
-This deploys a micro-service e-commerce application into a Kubernetes cluster in AWS. **FULLY automated.**
+**FULLY automated** CI/CD pipeline using various DevOps technologies. 
+This deploys a microservice e-commerce application into a Kubernetes cluster in AWS. 
 
-The following technologies are showcased here: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, Terraform, Ansible, Prometheus & Python.
+Showcasing these technologies: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
 ## What Does it do Exactly?
 
-The flow starts with this repo. The code is located in the `src` folder. Once a change is committed to `main` branch it then
-triggers Jenkins to retrieve a copy of the repo and build each service in Docker containers, uploads the images to a repo 
-and triggers Terraform. Terraform builds the infrastructure for the application which includes a custom VPC, EKS cluster 
-& all security components. Once Terraform is complete, Ansible reads the
+The flow starts with this repo using code in the `src` folder. Once a change is committed to the `main` branch it
+triggers Jenkins to retrieve a copy of the repo, build each service in Docker containers, upload the images to a docker 
+registry and triggers Terraform. Terraform builds the infrastructure for the application which includes a custom VPC, EKS cluster 
+S3 bucket, several EC2 instances & all security components. Once Terraform is complete, Ansible reads the
 new K8s images and pushes them to the newly created EKS cluster. 
 
 In this demo, the majority of Jenkins work is being performed by this utility
 using Python. For the purpose of this demonstration Jenkins is installed to create the Docker containers only but this is
-an overview explanation of how the CI/CD pipeline would normally function in a private environment. The end result is the deployment of a micro-service 
-e-commerce website application. Below are all the applications that will get installed as containers in the custom Kubernetes environment. 
+an overview explanation of how the CI/CD pipeline would normally function in a private environment. The end result is the deployment of a microservice
+e-commerce web application. Below are all the individual application services that will get installed as containers in the custom Kubernetes environment. 
 
 ![micro_service](media/microsevice.png)
 
@@ -35,7 +35,7 @@ on your workstation.
 
 ## How to use
 
-This is a self-contained demo utility. Download for your OS, unzip and execute **`start_demo.exe`**. 
+This is a self-contained demo utility. Everything needed to showcase the above technologies is included. Download for your OS, unzip and execute **`start_demo.exe`**. 
 You will have the following menu options.
 
 ![Menu](media/menu.png)
