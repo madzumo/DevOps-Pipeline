@@ -90,7 +90,7 @@ def status_of_the_show():
 
 def destroy_the_show():
     # 1. test AWS connection
-    if not operator_instance.check_aws_credentials():
+    if not operator_instance.check_aws_credentials(False):
         return
 
     # 2. Populate this workstation with Pipeline data

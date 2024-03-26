@@ -52,8 +52,8 @@ class AWSbase:
                                    hc.ConsoleColors.info)
             return True
         except Exception as ex:
-            if show_result:
-                hc.console_message(["AWS Configuration not present"], hc.ConsoleColors.error)
+            # if show_result:
+            hc.console_message(["AWS Configuration not present",f"{ex}"], hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):

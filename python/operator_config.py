@@ -154,7 +154,7 @@ class OperatorEc2(ec2_config.Ec2Config):
             return False
 
     def terraform_eks_cluster_down(self):
-        hc.console_message(["Removing e-commerce site from EKS Cluster"], hc.ConsoleColors.info)
+        hc.console_message(["Removing e-commerce app from EKS Cluster"], hc.ConsoleColors.info)
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
