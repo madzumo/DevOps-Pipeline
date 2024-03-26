@@ -54,8 +54,10 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
+        hc.console_message([''], hc.ConsoleColors.basic)
         hc.console_message(["Apply Terraform script", "Waiting on cluster(10 min) Please Wait!"],
                            hc.ConsoleColors.info)
+        hc.console_message([''], hc.ConsoleColors.basic)
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
@@ -101,30 +103,6 @@ class OperatorEc2(ec2_config.Ec2Config):
             print(f"An error occurred: {e}")
 
     def pipeline_status(self):
-        header_text = r"""
-.----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
-| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
-| |    _______   | || |  _________   | || |      __      | || |  _________   | || | _____  _____ | || |    _______   | |
-| |   /  ___  |  | || | |  _   _  |  | || |     /  \     | || | |  _   _  |  | || ||_   _||_   _|| || |   /  ___  |  | |
-| |  |  (__ \_|  | || | |_/ | | \_|  | || |    / /\ \    | || | |_/ | | \_|  | || |  | |    | |  | || |  |  (__ \_|  | |
-| |   '.___`-.   | || |     | |      | || |   / ____ \   | || |     | |      | || |  | '    ' |  | || |   '.___`-.   | |
-| |  |`\____) |  | || |    _| |_     | || | _/ /    \ \_ | || |    _| |_     | || |   \ `--' /   | || |  |`\____) |  | |
-| |  |_______.'  | || |   |_____|    | || ||____|  |____|| || |   |_____|    | || |    `.__.'    | || |  |_______.'  | |
-| |              | || |              | || |              | || |              | || |              | || |              | |
-| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
- '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
-"""
-
-        # 1. AWS Connection: ACTIVE / No Connection
-        #       AccountID:
-        #       KeyID:
-        #       SecretID:
-        # 2. Pipeline: ACTIVE / Not Installed
-        #       e-commerce site: URL
-        #       Ansible Monitoring:
-        #       Prometheus Monitoring:
-        #       Jenkins Server:
-
         # AWS status
         aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'
         aws_conn_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NO CONNECTION'
@@ -143,15 +121,16 @@ class OperatorEc2(ec2_config.Ec2Config):
         if self.get_instance() and self.get_web_url():
             pipeline_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'      e-commerce site: ' + self.k8_website + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'     K8s Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'      Ansible console: ' + self.ec2_instance_public_ip + "\n"
+            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
+            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   EKS Cluster status: ' + self.get_cluster_status() + "\n"
+            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'        Operator Node: ' + self.ec2_instance_public_ip + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   Prometheus Monitor: ' + self.prometheus + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password"
 
         # hc.clear_console()
-        print(Back.RED + Fore.YELLOW + header_text + Style.RESET_ALL + "\n")
+        print(Back.RED + Fore.YELLOW + hc.header_art_status + Style.RESET_ALL + "\n")
         # print(Back.RED + Fore.YELLOW + header_text + "\n") # entire back is red
         print(f"{aws_conn_title} {aws_conn_status}\n{aws_conn_info}\n")
         print(f"{pipeline_title} {pipeline_status}\n{pipeline_info}")
@@ -190,3 +169,17 @@ class OperatorEc2(ec2_config.Ec2Config):
 
         hc.console_message(["All resources for EKS cluster removed"], hc.ConsoleColors.info)
 
+    def get_cluster_status(self):
+        try:
+            eks_client = boto3.client('eks')
+
+            # Retrieve the status of the cluster
+            response = eks_client.describe_cluster(name='madzumo-ops-cluster')
+
+            # Extract and return the status
+            status = response['cluster']['status']
+            return status
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return 'unknown'

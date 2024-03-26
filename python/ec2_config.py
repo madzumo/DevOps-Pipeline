@@ -69,6 +69,9 @@ class Ec2Config(aws_madzumo.AWSbase):
 
     def populate_ec2_instance(self, show_result=True):
         """Populate all variables with Instance Information"""
+        if not self.check_aws_credentials(False):
+            hc.console_message(["Unable to connect to AWS", "Data not populated"], hc.ConsoleColors.error)
+            return
         response = self.get_instance()
         if response:
             if response[0]['Instances'][0]['State']['Name'] != 'running':
@@ -84,6 +87,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
                 self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
                 self.ssh_key_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
+                self.s3_temp_bucket = f"madzumo-ops-{self.aws_account_number}"
                 self.download_key_pair()
                 if show_result:
                     hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info)
@@ -335,6 +339,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             return False
 
     def upload_key_pair(self):
+        hc.console_message(['Backing up key pair to S3'], hc.ConsoleColors.info)
         try:
             file_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
             s3_setup = s3_config.S3config(self.s3_temp_bucket)
@@ -349,3 +354,13 @@ class Ec2Config(aws_madzumo.AWSbase):
             hc.console_message([f"Error:{ex}", "Pipeline can continue but PLEASE keep the Key Pair file in "
                                 "the the same directory with his utility", "Otherwise you will lose "
                                 "connectivity to the pipeline"], hc.ConsoleColors.error)
+
+    def remove_local_key_pair(self):
+        try:
+            file_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        except Exception as e:
+            hc.console_message(['Error removing key pair', f"{e}"], hc.ConsoleColors.info)

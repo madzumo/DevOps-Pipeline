@@ -43,21 +43,24 @@ def setup_the_show():
 
     if response.lower() != 'y' and response.lower() != 'yes':
         hc.console_message(['Pipeline Creation Cancelled by User', '(must enter YES)'], hc.ConsoleColors.error, 0)
-        hc.end_of_line()
         return
     else:
         hc.clear_console()
+
+    hc.console_message(['Do Not Interrupt this Process'], hc.ConsoleColors.warning, total_chars=25)
     # 1. test AWS connection
     if not operator_instance.check_aws_credentials():
         return
 
     # 2. Setup S3 bucket for storage
-    s3_setup = s3_config.S3config(f"madzumo-ops-{operator_instance.aws_account_number}")
+    s3_temp_bucket_name = f"madzumo-ops-{operator_instance.aws_account_number}"
+    s3_setup = s3_config.S3config(s3_temp_bucket_name)
     if s3_setup.check_if_bucket_exists():
         hc.console_message(['Temp S3 bucket exists'], hc.ConsoleColors.info)
     else:
         hc.console_message(['Creating temp S3 bucket'], hc.ConsoleColors.info)
         s3_setup.create_bucket()
+    operator_instance.s3_temp_bucket = s3_temp_bucket_name
 
     # 3. Initialize Operator Node Instance (Terraform & Ansible control node)
     hc.console_message(['Creating Operator Node'], hc.ConsoleColors.info)
@@ -73,6 +76,8 @@ def setup_the_show():
     operator_instance.ansible_play_ecommerce()
 
     hc.console_message(['Pipeline Complete!'], hc.ConsoleColors.title)
+    hc.pause_console()
+    hc.clear_console()
     status_of_the_show()
 
 
@@ -93,7 +98,7 @@ def destroy_the_show():
     # 3. Clean up all Objects & remove instances
     operator_instance.terraform_eks_cluster_down()
     operator_instance.delete_ec2_instance()
-
+    operator_instance.remove_local_key_pair()
     # 4. lastly remove S3 bucket
     hc.console_message(["Terminating temp S3 bucket"], hc.ConsoleColors.info)
     s3_setup = s3_config.S3config(f"madzumo-ops-{operator_instance.aws_account_number}")
