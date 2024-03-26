@@ -17,7 +17,7 @@ module "eks" {
   } 
    tags = {
     environment = "madzumo"
-    applicatiion = "ecommerce"
+    application = "ecommerce"
   }
 
   eks_managed_node_groups = {

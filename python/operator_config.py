@@ -55,6 +55,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         ssh_run.run_command(install_script)
 
         hc.console_message([''], hc.ConsoleColors.basic)
+        time.sleep(5)
         hc.console_message(["Apply Terraform script", "Waiting on cluster(10 min) Please Wait!"],
                            hc.ConsoleColors.info)
         hc.console_message([''], hc.ConsoleColors.basic)
@@ -63,6 +64,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         """
         ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
+        time.sleep(5)
 
     def ansible_play_ecommerce(self):
         hc.console_message(["Running Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
