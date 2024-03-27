@@ -9,15 +9,16 @@ Showcasing these skills: Jenkins, Docker, Containers, AWS coding, EKS, S3, VPC, 
 ## What Does It Do?
 
 The flow starts with the application in the `src` folder. Once a change is committed to the `main` branch it
-triggers Jenkins to retrieve a copy of the repo, build each service in Docker containers, upload the images to a docker 
+triggers Jenkins to retrieve a copy of the repo, build each app service in Docker containers, upload the images to a docker 
 registry and triggers Terraform. Terraform builds the infrastructure for the application which includes a custom VPC, EKS cluster 
 S3 bucket, several EC2 instances & all security components. Once Terraform is complete, Ansible reads the
 new K8s images and pushes them to the newly created EKS cluster. 
 
-In this demo, the majority of Jenkins work is being performed by this utility
-using Python. For the purpose of this demonstration Jenkins is installed to create the Docker containers only but this is
-an overview explanation of how the CI/CD pipeline would normally function in a private environment. The end result is the deployment of a microservice
-e-commerce web application from scratch **Fully Automated**. Below are all the individual application services that will get installed as containers in the custom Kubernetes environment. 
+This is an overview explanation of how the CI/CD pipeline would normally function in a private environment. 
+For the purpose of this demonstration Jenkins creates the Docker containers only and the other triggers are
+handled by the demo utility itself using Python. The end result is the deployment of a microservice
+e-commerce web application from scratch **Fully Automated**. Below are all the individual application services that will get 
+installed as containers in your private Kubernetes environment. 
 
 ![micro_service](media/microsevice.png)
 

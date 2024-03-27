@@ -96,11 +96,14 @@ def destroy_the_show():
     # 2. Populate this workstation with Pipeline data
     operator_instance.populate_ec2_instance()
 
-    # 3. Clean up all Objects & remove instances
+    # 3. CHECK TO SEE IF IT EXISTS YET -> Status check first
+
+    # 4. Clean up all Objects & remove instances
     operator_instance.terraform_eks_cluster_down()
     operator_instance.delete_ec2_instance()
     operator_instance.remove_local_key_pair()
-    # 4. lastly remove S3 bucket
+
+    # 5. lastly remove S3 bucket
     hc.console_message(["Terminating temp S3 bucket"], hc.ConsoleColors.info)
     s3_setup = s3_config.S3config(f"madzumo-ops-{operator_instance.aws_account_number}")
     s3_setup.delete_bucket_contents()

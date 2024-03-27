@@ -19,7 +19,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         self.jenkins = 'coming soon'
 
     def deploy_terraform_ansible(self):
-        hc.console_message(["Deploying Terraform and Ansible"], hc.ConsoleColors.info)
+        hc.console_message(["Install and Setup Terraform + Ansible"], hc.ConsoleColors.info)
         self.get_aws_keys()
 
         install_script = f"""
@@ -56,7 +56,7 @@ class OperatorEc2(ec2_config.Ec2Config):
 
         hc.console_message([''], hc.ConsoleColors.basic)
         time.sleep(5)
-        hc.console_message(["Apply Terraform script", "Waiting on cluster(10 min) Please Wait!"],
+        hc.console_message(["Deploy Infrastructure via Terraform", "Waiting on cluster(10 min) Please Wait!"],
                            hc.ConsoleColors.info)
         hc.console_message([''], hc.ConsoleColors.basic)
         install_script = """
@@ -67,7 +67,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         time.sleep(5)
 
     def ansible_play_ecommerce(self):
-        hc.console_message(["Running Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
+        hc.console_message(["Deploy app via Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
         install_script = f"""
         ansible-galaxy collection install community.kubernetes
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
