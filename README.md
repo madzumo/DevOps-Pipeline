@@ -33,10 +33,11 @@ installed in the Kubernetes environment.
 
 ## Prerequisites
 
-1. All you need is an Access Key ID and Secret Key ID. However, it's best if you download and install the AWS CLI tool and run
-`aws configure` from the command line. This will ask for the Access Key ID and Secret Key ID as well as the region to statically set it
-on your workstation. 
-2. This pipeline is configured of many technologies and accesses many components, so it is highly recommended that your Access & Secret ID user have **administrator rights** to the  AWS environment.
+1. All you need is an **Access Key ID** and **Secret Key ID**.
+   However, it's best if you download and install the AWS CLI tool and run
+`aws configure` from the command line.
+   This will ask for the Access Key ID, Secret Key ID, and default Region to statically set on your workstation. 
+2. This pipeline is accessing many components in your AWS environment, so it is highly recommended that your Access & Secret ID user have **Administrator rights** to the AWS environment.
 
 ## Download 
 
@@ -44,7 +45,11 @@ on your workstation.
 
 ## How to use
 
-This is a self-contained demo utility. Everything needed to showcase the above technologies is included. Download for your OS, unzip and execute **`start_demo.exe`**. 
+This is a self-contained demo utility. Everything needed to showcase the above technologies is included. 
+1. Download for your OS
+2. Unzip 
+3. Execute **`start_demo.exe`**. 
+
 You will have the following menu options.
 
 ![Menu](media/menu.png)
@@ -53,9 +58,10 @@ You will have the following menu options.
   If you have AWS CLI installed and configured, then 
     it will automatically connect.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
-- **Set AWS Credentials** - To manually enter your AWS Access Key & Secret Key.
+- **Set AWS Credentials** - Manually enter your AWS Access Key & Secret Key.
   It sets them as session environment variables, so you will have to re-enter upon each execution.
   That is why it's better to install the AWS CLI utility beforehand.
+  Default region 'us-east-1' will be used when using this method.
 - **Install Full Pipeline** - Exactly what it says. Install all components for a full CI/CD pipeline with the infrastructure stated above. **Fully Automated**
 - **Remove Existing Pipeline** - This removes all components and resources installed leaving your AWS environment clean.
 - **View Pipeline Status** -
