@@ -6,19 +6,28 @@ browse items, add them to the cart, and purchase them.
 
 Showcasing: Jenkins, Docker, Kubernetes, AWS coding, EKS, ECR, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
-## What Does It Do?
+## Pipeline Flow
 
-The flow starts with the application in the `src` folder. Once a change is committed to the `main` branch it
-triggers Jenkins to retrieve a copy of the repo, build each app service in Docker containers, upload the images to a docker 
-registry, triggers Terraform and hands off to Ansible. Terraform builds the infrastructure for the application which includes a custom VPC, EKS cluster 
-S3 bucket, several EC2 instances & all security components. Once Terraform is complete, Ansible reads the
+The flow starts with the application in this git repo.
+Once a change is committed to the `main` branch it
+triggers Jenkins to retrieve a copy of the repo,
+build each app service in Docker images, upload the images to a docker 
+registry, triggers Terraform and hands off to Ansible.
+Terraform builds the infrastructure for the application which includes an isolated VPC, EKS cluster 
+S3 bucket, several EC2 instances & all security components.
+Once Terraform is complete, Ansible reads the
 new K8s images and deploys the application with all the services to the newly created EKS cluster. 
 
 This is an overview explanation of how the CI/CD pipeline would normally function in a private environment. 
-For the purpose of this demonstration Jenkins only creates the containers and uploads to a Docker registry. The other triggers are
-handled by the demo utility itself using Python. The end result is the deployment of a microservice
-e-commerce web application from scratch **Fully Automated**. Below are all the individual application services that will get 
-installed as containers in the Kubernetes environment. 
+For this demonstration, Jenkins only creates the images and uploads to a Docker registry.
+The other triggers are handled by the demo utility itself using Python.
+The result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
+
+Upon completion, you will have access to the newly created e-commerce site to test out its functionality,
+the jenkins server to view the configured pipeline,
+and an Operator Node to view Terraform + Ansible status.
+Below are the individual application service pods that will get 
+installed in the Kubernetes environment. 
 
 ![micro_service](media/microsevice.png)
 
