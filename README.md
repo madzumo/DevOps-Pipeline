@@ -31,7 +31,7 @@ on your workstation.
 
 ## Download 
 
-[DevOps Demo - Windows](<a href="data:application/octet-stream,DATA" download="media/madzumo_devops.zip">TITLE</a>)
+[DevOps Demo - Windows](https://github.com/madzumo/devOps_pipeline/tree/main/media/madzumo_devops.zip)
 
 ## How to use
 
