@@ -126,10 +126,10 @@ class OperatorEc2(ec2_config.Ec2Config):
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   EKS Cluster status: ' + self.get_cluster_status() + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'        Operator Node: ' + self.ec2_instance_public_ip + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   Prometheus Monitor: ' + self.prometheus + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password"
+            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   Prometheus Monitor: ' + self.prometheus + "\n"
+            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
+            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
+            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password" + "\n"
 
         # hc.clear_console()
         print(Back.RED + Fore.YELLOW + hc.header_art_status + Style.RESET_ALL + "\n")
@@ -174,11 +174,7 @@ class OperatorEc2(ec2_config.Ec2Config):
     def get_cluster_status(self):
         try:
             eks_client = boto3.client('eks')
-
-            # Retrieve the status of the cluster
             response = eks_client.describe_cluster(name='madzumo-ops-cluster')
-
-            # Extract and return the status
             status = response['cluster']['status']
             return status
 
