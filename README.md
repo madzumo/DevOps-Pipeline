@@ -31,7 +31,7 @@ on your workstation.
 
 ## Download 
 
-[DevOps Demo - Windows](https://github.com/madzumo/devOps_pipeline/tree/main/media/madzumo_devops.zip)
+[DevOps Demo - Windows](https://github.com/madzumo/devOps_pipeline/releases/download/1.0/madzumo_devops.zip)
 
 ## How to use
 
