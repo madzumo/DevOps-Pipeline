@@ -15,7 +15,7 @@ S3 bucket, several EC2 instances & all security components. Once Terraform is co
 new K8s images and deploys the application with all the services to the newly created EKS cluster. 
 
 This is an overview explanation of how the CI/CD pipeline would normally function in a private environment. 
-For the purpose of this demonstration Jenkins creates the Docker containers only and the other triggers are
+For the purpose of this demonstration Jenkins only creates the containers and uploads to a Docker registry. The other triggers are
 handled by the demo utility itself using Python. The end result is the deployment of a microservice
 e-commerce web application from scratch **Fully Automated**. Below are all the individual application services that will get 
 installed as containers in the Kubernetes environment. 
