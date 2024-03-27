@@ -49,14 +49,19 @@ You will have the following menu options.
 
 ![Menu](media/menu.png)
 
-- **Test AWS Connection** - Test connectivity to your AWS environment. If you have aws cli installed and configured then 
-    it will automatically connect. Otherwise, you will need to enter your Access Key & Secret Key using the next option.
-- **Set AWS Credentials** - Allows you to manually enter your AWS Access Key & Secret Key. It's good while the application 
-      is open and you will have to re-enter upon each execution. That is why it's better to install the AWS CLI utility 
-      beforehand and run `aws configure` in the command line.
-- **Install Full Pipeline** - Exactly what it says. Install all components for a full CI/CD pipeline with all the technology stated above. **Fully Automated**
-- **Remove Existing Pipeline** - This removes all components and resources installed in the option above leaving your AWS environment clean.
-- **View Pipeline Status** - Here you can view the custom URL created for the e-commerce website so you can test its functionality.
-      In addition,  the status of your cluster and IP address of your Operator Node will be displayed.  You can run this anytime and 
-      from any computer. As long as your AWS credentials are valid to the same environment then you will see the same status information.
+- **Test AWS Connection** - Test connectivity to your AWS environment.
+  If you have AWS CLI installed and configured, then 
+    it will automatically connect.
+  Otherwise, you will need to enter your Access Key & Secret Key using the next option.
+- **Set AWS Credentials** - To manually enter your AWS Access Key & Secret Key.
+  It sets them as session environment variables, so you will have to re-enter upon each execution.
+  That is why it's better to install the AWS CLI utility beforehand.
+- **Install Full Pipeline** - Exactly what it says. Install all components for a full CI/CD pipeline with the infrastructure stated above. **Fully Automated**
+- **Remove Existing Pipeline** - This removes all components and resources installed leaving your AWS environment clean.
+- **View Pipeline Status** -
+  View the custom URL created for the e-commerce website, the status of your cluster,
+  the endpoint of your EKS cluster, the IP address of the Operator Node and the URL for the Jenkins Server.
+  You can run this anytime and from any computer.
+  As long
+  as the AWS credentials have access to the same environment the pipeline was created in then you will see the same status information.
 
