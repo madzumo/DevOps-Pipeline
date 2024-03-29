@@ -64,7 +64,7 @@ def setup_the_show():
 
     # 3. Initialize Operator Node Instance (Terraform & Ansible control node)
     hc.console_message(['Creating Operator Node'], hc.ConsoleColors.info)
-    operator_instance.create_ec2_instance()
+    operator_instance.create_ec2_instance(True)
 
     # 4. Install Terraform & Ansible on Operator Node
     operator_instance.deploy_terraform_ansible()
@@ -83,7 +83,7 @@ def setup_the_show():
 
 
 def status_of_the_show():
-    # 6. Display Review of install to user
+    # 6. Display Review of installation to user
     operator_instance.populate_ec2_instance(show_result=False)
     operator_instance.pipeline_status()
 

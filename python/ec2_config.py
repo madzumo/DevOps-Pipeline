@@ -14,8 +14,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ec2_instance_name = instance_name
         self.ec2_instance_public_ip = ''
         self.ec2_instance_id = ''
-        self.ec2_instance_private_ip = ''
-        self.ec2_instance_public_dnsname = ''
+        self.ec2_instance_public_dns_name = ''
         self.ec2_instance_subnet_id = ''
         self.ec2_instance_vpc_id = ''
         self.ssh_key_path = ''
@@ -24,14 +23,16 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ssh_username = 'ec2-user'
         self.ssh_timeout = 60
 
-    def create_ec2_instance(self):
+    def create_ec2_instance(self, backup_key_to_s3=False):
         """Creates Instance in Default VPC. Instance Name required."""
         if self.get_instance():
             hc.console_message(["EC2 instance already present"], hc.ConsoleColors.info)
             self.populate_ec2_instance()
         else:
             self.create_security_group()
-            self.create_key_pair()
+            self.create_ec2_key_pair()
+            if backup_key_to_s3:
+                self.upload_key_pair()
             try:  # Launch a new EC2 instance
                 results = self.ec2_resource.create_instances(
                     ImageId=self.instance_ami,
@@ -71,7 +72,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         """Populate all variables with Instance Information"""
         if not self.check_aws_credentials(False):
             hc.console_message(["Unable to connect to AWS", "Data not populated"], hc.ConsoleColors.error)
-            return
+            return False
         response = self.get_instance()
         if response:
             if response[0]['Instances'][0]['State']['Name'] != 'running':
@@ -83,7 +84,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 self.ec2_instance_id = response[0]['Instances'][0]['InstanceId']
                 self.ec2_instance_public_ip = response[0]['Instances'][0]['PublicIpAddress']
                 self.ec2_instance_private_ip = response[0]['Instances'][0]['PrivateIpAddress']
-                self.ec2_instance_public_dnsname = response[0]['Instances'][0]['PublicDnsName']
+                self.ec2_instance_public_dns_name = response[0]['Instances'][0]['PublicDnsName']
                 self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
                 self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
                 self.ssh_key_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
@@ -95,6 +96,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             if show_result:
                 hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
                                    hc.ConsoleColors.info)
+        return True
 
     def delete_all_ec2_instances_tag(self):
         response = self.get_all_instances_tag()
@@ -111,16 +113,17 @@ class Ec2Config(aws_madzumo.AWSbase):
                 hc.ConsoleColors.info)
 
     def delete_ec2_instance(self):
-        if self.ec2_instance_id == '':
-            print("Error: EC2 instance id needed")
-        else:
-            hc.console_message(["Terminating Operator Node"], hc.ConsoleColors.info)
-            you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
-            you_are_terminated.terminate()
-            print(f"EC2 instance {self.ec2_instance_id} terminating.....")
-            self.wait_for_instance_to_terminate()
-            self.delete_key_pair()
-            self.delete_security_group()
+        if self.populate_ec2_instance():
+            if self.ec2_instance_id == '':
+                print("Error: EC2 instance id needed")
+            else:
+                hc.console_message(["Terminating Operator Node"], hc.ConsoleColors.info)
+                you_are_terminated = self.ec2_resource.Instance(self.ec2_instance_id)
+                you_are_terminated.terminate()
+                print(f"EC2 instance {self.ec2_instance_id} terminating.....")
+                self.wait_for_instance_to_terminate()
+                self.delete_key_pair()
+                self.delete_security_group()
 
     def get_security_group_id(self):
         response = self.ec2_client.describe_security_groups(
@@ -224,7 +227,7 @@ class Ec2Config(aws_madzumo.AWSbase):
 
         hc.console_message(["Key Pair terminated"], hc.ConsoleColors.info)
 
-    def create_key_pair(self):
+    def create_ec2_key_pair(self):
         if self.get_key_pair_id():
             hc.console_message(["Key Pair Present"], hc.ConsoleColors.info)
         else:
@@ -238,7 +241,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                 os.chmod(file_path, 0o600)
                 hc.console_message([f"Created Key Pair: {self.ec2_instance_name}-keypair"],
                                    hc.ConsoleColors.info)
-                self.upload_key_pair()
+                # self.upload_key_pair()
             except Exception as ex:
                 hc.console_message([f"Error creating key pair:", f"{ex}"], hc.ConsoleColors.error)
 

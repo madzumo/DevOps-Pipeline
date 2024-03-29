@@ -1,8 +1,9 @@
 import paramiko
-
+import os
 
 class SSHClient:
-    """Run commands on remote Linux server interactively. Initiate with host, usernmae & key file path. then call run_command()"""
+    """Run commands on remote Linux server interactively.
+    Initiate with host, username & key file path."""
 
     def __init__(self, hostname, username, keyfile):
         self.hostname = hostname
@@ -25,30 +26,6 @@ class SSHClient:
     def _connect_close(self):
         self.client.close()
 
-    def _execute_command_interactively(self):
-        commands = ['ls', 'whoami', 'date']
-        try:
-            for command in commands:
-                #     print(f"Executing command: {command}")
-
-                #     # Execute the command
-                #     stdin, stdout, stderr = self.client.exec_command(command, get_pty=True)
-
-                #     # Check if command execution is done
-                #     while not stdout.channel.exit_status_ready():
-                #         # Ready to read
-                #         if stdout.channel.recv_ready():
-                #             rl, wl, xl = select.select([stdout.channel], [], [], 0.0)
-                #             if len(rl) > 0:
-                #                 # Print data from stdout
-                #                 print(stdout.channel.recv(1024).decode('utf-8'), end='')
-
-                #         time.sleep(1)  # Wait a bit for output to accumulate
-
-                print("\nCommand execution completed.\n")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
     def _execute_command(self, show_output=True):
         try:
             stdin, stdout, stderr = self.client.exec_command(self.shell_command)
@@ -65,3 +42,50 @@ class SSHClient:
         if self._connect_open():
             self._execute_command(show_output)
             self._connect_close()
+
+    def ensure_remote_dir(self, sftp, remote_directory):
+        """Ensure that the remote directory exists, create it if necessary."""
+        # Split the path to get all directories and subdirectories
+        dirs = remote_directory.split('/')
+        current_dir = ''
+        for dir_x in dirs:
+            if dir_x:  # This skips empty strings to avoid issues with leading '/'
+                current_dir += '/' + dir_x  # Construct the path with UNIX-like separators
+                try:
+                    sftp.stat(current_dir)
+                except FileNotFoundError:
+                    sftp.mkdir(current_dir)
+                    print(f"Created remote directory: {current_dir}")
+
+    def copy_contents(self, local_path, remote_path):
+        """
+        Copy a file or all contents of a folder. IF it's file you must name the file from and to destination.
+        Same with folder.
+        """
+        if self._connect_open():
+            scp = paramiko.SFTPClient.from_transport(self.client.get_transport())
+            try:
+                if os.path.isdir(local_path):
+                    for item in os.listdir(local_path):
+                        local_item_path = os.path.join(local_path, item)
+                        remote_item_path = os.path.join(remote_path, item).replace('\\',
+                                                                                   '/')
+                        if os.path.isfile(local_item_path):
+                            # Ensure the remote directory exists before copying
+                            self.ensure_remote_dir(scp, os.path.dirname(remote_item_path))
+                            scp.put(local_item_path, remote_item_path)
+                            print(f"Copied file: {local_item_path} to {remote_item_path}")
+                elif os.path.isfile(local_path):
+                    # Ensure the remote directory exists before copying
+                    self.ensure_remote_dir(scp, os.path.dirname(remote_path))
+                    scp.put(local_path, remote_path)
+                    print(f"Copied file: {local_path} to {remote_path}")
+                else:
+                    print("The specified local_path does not exist or is not accessible.")
+            except Exception as e:
+                print(f"Error copying contents:{e}\n{local_path}\n{remote_path}")
+            finally:
+                scp.close()
+                self.client.close()
+        else:
+            print("Failed to open connection.")
