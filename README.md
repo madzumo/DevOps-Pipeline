@@ -6,7 +6,7 @@ browse items, add them to the cart, and purchase them.
 
 Showcasing: Jenkins, Docker, Kubernetes, AWS coding, EKS, ECR, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
-![pipeline layout](media/pipeline.jpg)
+![pipeline layout](media/pipeline2.jpg)
 
 ## Pipeline Flow
 
