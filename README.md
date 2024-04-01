@@ -4,7 +4,7 @@
 This deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS. The application is a web-based e-commerce app where users can 
 browse items, add them to the cart, and purchase them. Below is the pipeline tree.
 
-![pipeline layout](media/pipeline2.jpg)
+![pipeline layout](media/pipeline.jpg)
 
 ## Pipeline Flow
 
