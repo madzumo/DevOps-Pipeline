@@ -2,9 +2,7 @@
 
 **FULLY automated** CI/CD pipeline using various DevOps technologies. 
 This deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS. The application is a web-based e-commerce app where users can 
-browse items, add them to the cart, and purchase them.
-
-Below is the structure of the pipeline using: Jenkins, Docker, Kubernetes, AWS coding, EKS, ECR, S3, VPC, Terraform, Ansible, Prometheus & Python.
+browse items, add them to the cart, and purchase them. Below is the pipeline tree.
 
 ![pipeline layout](media/pipeline2.jpg)
 
