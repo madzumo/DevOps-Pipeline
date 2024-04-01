@@ -6,6 +6,8 @@ browse items, add them to the cart, and purchase them.
 
 Showcasing: Jenkins, Docker, Kubernetes, AWS coding, EKS, ECR, S3, VPC, Terraform, Ansible, Prometheus & Python.
 
+![pipeline layout](media/pipeline.jpg)
+
 ## Pipeline Flow
 
 The flow starts with the application in this git repo.
