@@ -24,8 +24,6 @@ class StartDemo:
         self.operator_instance = OperatorEc2('madzumo-ops')
         self.jenkins_instance = Ec2Config('madzumo-jenkins')
         self.menu = MenuOptions
-        print(MenuOptions.test_connection)
-        print(MenuOptions.test_connection.value)
 
     def run_demo(self):
         while True:
@@ -52,7 +50,7 @@ class StartDemo:
 
     def _setup_the_show(self):
         if self._confirm_the_show():
-            hc.console_message(['Do Not Interrupt this Process'], hc.ConsoleColors.warning, total_chars=25)
+            hc.console_message(['***Please, Do NOT Interrupt This Process***'], hc.ConsoleColors.warning, total_chars=0)
             # 1. test AWS connection
             if self.operator_instance.check_aws_credentials():
                 # 2. Setup S3 bucket for storage

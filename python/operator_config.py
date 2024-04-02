@@ -54,20 +54,16 @@ class OperatorEc2(Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-        hc.console_message([''], hc.ConsoleColors.basic)
-        time.sleep(5)
-        hc.console_message(["Deploy Infrastructure via Terraform", "Waiting on cluster(10 min) Please Wait!"],
-                           hc.ConsoleColors.info)
-        hc.console_message([''], hc.ConsoleColors.basic)
+        hc.console_message(["Deploy Infrastructure via Terraform"], hc.ConsoleColors.info)
+        hc.console_message(["Waiting on cluster(10 min) Please Wait!"], hc.ConsoleColors.info, total_chars=0)
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-        time.sleep(5)
 
     def ansible_apply_playbook(self):
-        hc.console_message(["Deploy app via Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
+        hc.console_message(["Deploy app via Ansible on Kubernetes Cluster"], hc.ConsoleColors.info)
         install_script = f"""
         ansible-galaxy collection install community.kubernetes
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
@@ -91,6 +87,8 @@ class OperatorEc2(Ec2Config):
         # ps aux | grep kubectl | grep port-forward
         # kill <PID>
         # Grafana: admin / prom-operator
+        # Test traffic:
+        # kubectl run curl-test --image=radial/busyboxplus:curl -i --tty --rm
 
     def get_k8_service_hostname(self):
         hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)
@@ -159,7 +157,10 @@ class OperatorEc2(Ec2Config):
             eks_client = boto3.client('eks')
             response = eks_client.describe_cluster(name='madzumo-ops-cluster')
             status = response['cluster']['status']
-            return status
+            if str(status).lower() == 'active':
+                return 'UP'
+            else:
+                return status
 
         except Exception as e:
             print(f"Error: {e}")

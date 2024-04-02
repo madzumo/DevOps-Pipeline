@@ -16,10 +16,10 @@ class ConsoleColors(Enum):
     warning = Back.MAGENTA + Fore.WHITE
 
 
-welcome_message = ["This utility will deploy an e-commerce website using a full CI/CD pipeline in your AWS "
+welcome_message = ["This utility creates a complete CI/CD pipeline to deploy a microservice app in your AWS "
                    "infrastructure",
-                   "Tools used: Git, Jenkins, Docker, Kubernetes, EKS, Prometheus Terraform, Ansible & Python",
-                   "All you need is an AWS account Access Key ID and Secret Key ID. Select option below to get started"]
+                   "Tools Used: Git,Jenkins,Docker,Kubernetes,EKS,ECR,Prometheus,Grafana,Terraform,Ansible & Python",
+                   "All you need is an AWS Access Key ID and Secret Key ID. Select option below to get started"]
 
 menu_options = ["Menu Options:", "1 - Test AWS Connection", "2 - Set AWS Credentials",
                 "3 - Install Full Pipeline",
@@ -76,11 +76,10 @@ def get_current_time():
     return military_time
 
 
-def console_message(message_words, message_color, total_chars=total_line_chars, pause_message=False,
-                    no_formatting=False):
-    """Display console messages in color scheme. message_words must be a list. Each list item will be on its own line.
-    Message_color is simply the selected ConsoleColors enum. To have back color end with the word (non-uniform back color)
-    use total_chars = 0"""
+def console_message(message_words, message_color, total_chars=total_line_chars, no_formatting=False):
+    """Display console messages in color. Message_words must be in a LIST []. Each list item will be on its own line.
+    Select from ConsoleColors enum for the Color scheme. To have Back color stop with the word instead of full line,
+    use total_chars = 0. For non-color regular console message use no_formatting = True"""
 
     paragraph = ''
     multi_word = False
@@ -100,9 +99,7 @@ def console_message(message_words, message_color, total_chars=total_line_chars, 
             paragraph += word
         multi_word = True
 
-    if pause_message:
-        input(message_color.value + paragraph.title() + Style.RESET_ALL)
-    elif no_formatting:
+    if no_formatting:
         print(paragraph + Style.RESET_ALL)
     else:
         print(message_color.value + paragraph + Style.RESET_ALL)
@@ -126,7 +123,8 @@ def end_of_line():
 
 
 def pause_console():
-    console_message(['hit enter to continue'], ConsoleColors.commands, total_chars=0, pause_message=True)
+    console_message(['hit enter to continue'], ConsoleColors.commands, total_chars=0)
+    input('')
 
 
 def display_outro_message():
