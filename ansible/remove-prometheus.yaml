@@ -15,13 +15,13 @@
         kubeconfig: "{{ kubeconfig }}"
         state: absent
 
-    - name: Remove monitoring namespace
-      kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig }}"
-        name: "{{ chart_namespace }}"
-        api_version: v1
-        kind: Namespace
-        state: absent
-        wait: true
-        wait_timeout: 300
-      # ignore_errors: yes
+    # - name: Remove monitoring namespace
+    #   kubernetes.core.k8s:
+    #     kubeconfig: "{{ kubeconfig }}"
+    #     name: "{{ chart_namespace }}"
+    #     api_version: v1
+    #     kind: Namespace
+    #     state: absent
+    #     wait: true
+    #     wait_timeout: 300
+    #   # ignore_errors: yes

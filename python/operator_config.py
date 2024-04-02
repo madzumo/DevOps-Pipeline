@@ -74,6 +74,14 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
+        
+        time.sleep(10)
+        hc.console_message(["Deploy Prometheus and Grafana"], hc.ConsoleColors.info)
+        install_script = """
+        ansible-playbook madzumo/ansible/deploy-prometheus.yaml
+        """
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run.run_command(install_script)
 
     def install_prometheus_grafana(self): # handed off to Ansible to control
         hc.console_message(["Deploy Prometheus and Setup Grafana"], hc.ConsoleColors.info)
@@ -170,13 +178,21 @@ class OperatorEc2(Ec2Config):
             return False
         
     def terraform_eks_cluster_down(self):
-        hc.console_message(["Removing e-commerce app from EKS Cluster"], hc.ConsoleColors.info)
+        hc.console_message(["Removing Prometheus and Grafana"], hc.ConsoleColors.info)
+        install_script = """
+        ansible-playbook madzumo/ansible/remove-prometheus.yaml
+        """
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run.run_command(install_script)
+        
+        hc.console_message(["Removing e-commerce app Kubernetes Cluster"], hc.ConsoleColors.info)
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
         time.sleep(10)
+        
         hc.console_message(["Removing EKS Cluster & other resources (10 min)", "Please Wait!"],
                            hc.ConsoleColors.info)
         install_script = """
