@@ -57,12 +57,13 @@ You will have the following menu options.
   If you have AWS CLI installed and configured, then 
     it will automatically connect.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
-- **Set AWS Credentials** - Manually enter your AWS Access Key & Secret Key.
-  It sets it as an environment variables, so you will have to re-enter those keys upon each execution.
-  That is why it's better to install the AWS CLI utility beforehand.
-  Default region 'us-east-1' will be used when using this method.
-- **Install Full Pipeline** - Exactly what it says. Install all components as illustrated for a complete CI/CD pipeline. **Fully Automated**
-- **Remove Existing Pipeline** - This removes all components and resources installed via this demo leaving your AWS environment clean.
+- **Set AWS Credentials** - Manually enter your AWS Access Key ID & Secret Key ID.
+  They are set for the duration of the session,
+  so you will have to enter those keys again if you close and reopen the utility.
+  To avoid having to re-enter the keys, then install the AWS CLI utility beforehand.
+  Default region of 'us-east-1' will be used when using this method.
+- **Install Full Pipeline** - Exactly what it says. Install all components as illustrated above for a complete CI/CD pipeline. **Fully Automated**
+- **Remove Existing Pipeline** - This removes all components and resources related to this demo leaving your AWS environment clean.
 - **View Pipeline Status** -
   View the custom URL created for the e-commerce website, the status of your cluster,
   the endpoint of your EKS cluster, the IP address of the Operator Node and the URL for the Jenkins Server.
