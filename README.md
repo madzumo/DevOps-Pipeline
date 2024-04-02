@@ -32,7 +32,7 @@ installed in the Kubernetes environment.
 
 ## Prerequisites
 
-1. All you need is an **Access Key ID** and **Secret Key ID**.
+1. All you need is an AWS **Access Key ID** and **Secret Key ID**.
    However, it's best if you download and install the AWS CLI tool and run
 `aws configure` from the command line.
    This will ask for the Access Key ID, Secret Key ID, and default Region to statically set on your workstation. 
@@ -45,9 +45,9 @@ installed in the Kubernetes environment.
 ## How to use
 
 This is a self-contained demo utility. Everything needed to showcase the above technologies is included. 
-1. Download for your OS
+1. Download file
 2. Unzip 
-3. Execute **`start_demo.exe`**. 
+3. Execute **`start_demo.exe`**
 
 You will have the following menu options.
 
@@ -58,15 +58,15 @@ You will have the following menu options.
     it will automatically connect.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
 - **Set AWS Credentials** - Manually enter your AWS Access Key & Secret Key.
-  It sets them as session environment variables, so you will have to re-enter upon each execution.
+  It sets it as an environment variables, so you will have to re-enter those keys upon each execution.
   That is why it's better to install the AWS CLI utility beforehand.
   Default region 'us-east-1' will be used when using this method.
-- **Install Full Pipeline** - Exactly what it says. Install all components for a full CI/CD pipeline with the infrastructure stated above. **Fully Automated**
-- **Remove Existing Pipeline** - This removes all components and resources installed leaving your AWS environment clean.
+- **Install Full Pipeline** - Exactly what it says. Install all components as illustrated for a complete CI/CD pipeline. **Fully Automated**
+- **Remove Existing Pipeline** - This removes all components and resources installed via this demo leaving your AWS environment clean.
 - **View Pipeline Status** -
   View the custom URL created for the e-commerce website, the status of your cluster,
   the endpoint of your EKS cluster, the IP address of the Operator Node and the URL for the Jenkins Server.
   You can run this anytime and from any computer.
   As long
-  as the AWS credentials have access to the same environment the pipeline was created in then you will see the same status information.
+  as the AWS credentials used have access to the same environment the pipeline was created in then you will see the same status information.
 
