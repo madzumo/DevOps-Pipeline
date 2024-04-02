@@ -8,7 +8,7 @@ browse items, add them to the cart, and purchase them. Below is the pipeline tre
 
 ## Pipeline Flow
 
-The flow starts with the application in this git repo.
+The flow starts with the application in the `src` folder of this repo.
 Once a change is committed to the `main` branch it
 triggers Jenkins to retrieve a copy of the repo,
 build each app service in Docker images, upload the images to a docker 
