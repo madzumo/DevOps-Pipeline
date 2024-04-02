@@ -18,10 +18,9 @@ S3 bucket, several EC2 instances & all security components.
 Once Terraform is complete, Ansible reads the
 new K8s images and deploys the application with all the services to the newly created EKS cluster. 
 
-This is an overview explanation of how the CI/CD pipeline would normally function in a private environment. 
-For this demonstration, Jenkins only creates the images and uploads to a Docker registry.
-The other triggers are handled by the demo utility itself using Python.
-The result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
+Python executes several triggers for the sake of this demonstration.
+In a private environment, Jenkins would handle most of the hand-offs.
+Either way, the result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
 
 Upon completion, you will have access to the newly created e-commerce site to test out its functionality,
 the jenkins server to view the configured pipeline,
