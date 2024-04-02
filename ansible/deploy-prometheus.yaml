@@ -1,8 +1,9 @@
 ---
-- hosts: localhost
+- name: Deploy Prometheus Monitoring
+  hosts: localhost
   connection: local
   vars:
-    kubeconfig: /path/to/kubeconfig
+    kubeconfig: /home/ec2-user/.kube/config
     release_name: monitoring
     chart_repo: https://prometheus-community.github.io/helm-charts
     chart_name: kube-prometheus-stack
@@ -26,10 +27,9 @@
     - name: Create monitoring namespace
       kubernetes.core.k8s:
         kubeconfig: "{{ kubeconfig }}"
-        name: "{{ chart_namespace }}"
-        api_version: v1
         kind: Namespace
         state: present
+        name: "{{ chart_namespace }}"
 
     - name: Deploy Helm chart
       kubernetes.core.helm:
@@ -45,5 +45,5 @@
       delay: 10
 
     - name: Show Helm deployment status
-      debug:
+      ansible.builtin.debug:
         msg: "{{ helm_deploy.status }}"
