@@ -335,7 +335,7 @@ class Ec2Config(aws_madzumo.AWSbase):
             s3_setup.download_file_from_bucket(self.ssh_key_pair_name, file_path)
 
             os.chmod(file_path, 0o600)
-            hc.console_message(['Downloaded Key Pair file'], hc.ConsoleColors.info)
+            hc.console_message(['Download Key Pair file'], hc.ConsoleColors.info)
             return True
         except Exception as e:
             hc.console_message(['Error downloading key pair', f"{e}"], hc.ConsoleColors.info)

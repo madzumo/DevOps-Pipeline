@@ -19,7 +19,7 @@ class OperatorEc2(Ec2Config):
         self.grafana = 'coming soon'
 
     def install_terraform_ansible(self):
-        hc.console_message(["Install and Setup Terraform + Ansible"], hc.ConsoleColors.info)
+        hc.console_message(["Install Terraform + Ansible + Helm"], hc.ConsoleColors.info)
         self.get_aws_keys()
 
         install_script = f"""
@@ -41,6 +41,9 @@ class OperatorEc2(Ec2Config):
         aws configure set default.region {self.region}
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+        curl -LO https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz
+        tar -zxvf helm-v3.14.3-linux-amd64.tar.gz
+        sudo mv linux-amd64/helm /usr/local/bin/helm
         """
         # print(f"What we have\n{self.ec2_instance_public_ip}\n{self.ssh_username}\n{self.ssh_key_path}")
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)

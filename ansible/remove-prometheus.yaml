@@ -1,8 +1,9 @@
 ---
-- hosts: localhost
+- name: Remove Promethus Monitoring
+  hosts: localhost
   connection: local
   vars:
-    kubeconfig: /path/to/kubeconfig
+    kubeconfig: /home/ec2-user/.kube/config
     release_name: monitoring
     chart_namespace: monitoring
 
@@ -21,6 +22,6 @@
         api_version: v1
         kind: Namespace
         state: absent
-        wait: yes
+        wait: true
         wait_timeout: 300
-      ignore_errors: yes
+      # ignore_errors: yes
