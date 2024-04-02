@@ -18,7 +18,7 @@ class OperatorEc2(Ec2Config):
         self.jenkins = 'coming soon'
         self.grafana = 'coming soon'
 
-    def deploy_terraform_ansible(self):
+    def install_terraform_ansible(self):
         hc.console_message(["Install and Setup Terraform + Ansible"], hc.ConsoleColors.info)
         self.get_aws_keys()
 
@@ -66,7 +66,7 @@ class OperatorEc2(Ec2Config):
         ssh_run.run_command(install_script)
         time.sleep(5)
 
-    def ansible_play_ecommerce(self):
+    def ansible_apply_playbook(self):
         hc.console_message(["Deploy app via Ansible Playbook on EKS Cluster"], hc.ConsoleColors.info)
         install_script = f"""
         ansible-galaxy collection install community.kubernetes
@@ -76,18 +76,17 @@ class OperatorEc2(Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-    def prometheus_grafana(self):
+    def install_prometheus_grafana(self):
         hc.console_message(["Deploy Prometheus and Setup Grafana"], hc.ConsoleColors.info)
         install_script = f"""
-                help repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                 helm repo update
-                kubectl create namespace monitoring
-                helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
+                kubectl create namespace monitor
+                helm install monitoring prometheus-community/kube-prometheus-stack -n monitor
                 """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-
-        # kubectl port-forward service/monitoring-kube-prometheus-prometheus -n monitoring 9090:9090 &
+        # kubectl port-forward service/monitoring-kube-prometheus-prometheus -n monitor 9090:9090 &
 
     def get_k8_service_hostname(self):
         hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)

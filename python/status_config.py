@@ -6,7 +6,7 @@ class StatusPage:
     def __init__(self, operator):
         self.operator = operator
 
-    def populate_status_page_show(self):
+    def populate_status_page(self):
         hc.console_message(['Getting Status'], hc.ConsoleColors.title)
         # AWS status
         aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'

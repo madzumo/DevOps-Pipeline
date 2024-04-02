@@ -2,7 +2,7 @@ import helper_config as hc
 import s3_config
 from ec2_config import Ec2Config
 from operator_config import OperatorEc2
-from status_page import StatusPage
+from status_config import StatusPage
 import os
 
 operator_instance = OperatorEc2('madzumo-ops')
@@ -59,13 +59,13 @@ def setup_the_show():
     operator_instance.create_ec2_instance(True)
 
     # 4. Install Terraform & Ansible on Operator Node
-    operator_instance.deploy_terraform_ansible()
+    operator_instance.install_terraform_ansible()
 
     # 5. use Terraform to deploy eks cluster
     operator_instance.terraform_eks_cluster_up()
 
     # 6. use Ansible to apply full e-commerce site to k8s
-    operator_instance.ansible_play_ecommerce()
+    operator_instance.ansible_apply_playbook()
 
     # 7. deploy Prometheus and Grafana access
 
@@ -75,7 +75,7 @@ def setup_the_show():
     # hc.console_message(['Getting Status'], hc.ConsoleColors.title)
     # status_of_the_show()
     sp = StatusPage(operator_instance, jenkins_instance)
-    sp.populate_status_page_show()
+    sp.populate_status_page()
 
 def status_of_the_show():
     # 6. Display Review of installation to user

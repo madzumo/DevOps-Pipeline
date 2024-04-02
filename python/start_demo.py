@@ -2,7 +2,7 @@ import helper_config as hc
 from s3_config import S3config
 from ec2_config import Ec2Config
 from operator_config import OperatorEc2
-from status_page import StatusPage
+from status_config import StatusPage
 from enum import Enum
 
 
@@ -70,13 +70,13 @@ class StartDemo:
                 self.operator_instance.create_ec2_instance(True)
 
                 # 4. Install Terraform & Ansible on Operator Node
-                self.operator_instance.deploy_terraform_ansible()
+                self.operator_instance.install_terraform_ansible()
 
                 # 5. use Terraform to deploy eks cluster
                 self.operator_instance.terraform_eks_cluster_up()
 
                 # 6. use Ansible to apply full e-commerce site on k8s
-                self.operator_instance.ansible_play_ecommerce()
+                self.operator_instance.ansible_apply_playbook()
 
                 # 7. deploy Prometheus and Grafana
 
@@ -120,7 +120,7 @@ class StartDemo:
 
     def _status_of_the_show(self):
         sp = StatusPage(self.operator_instance)
-        sp.populate_status_page_show()
+        sp.populate_status_page()
 
 
 if __name__ == "__main__":
