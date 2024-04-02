@@ -22,9 +22,9 @@ Python executes several triggers for the sake of this demonstration.
 In a production environment, Jenkins would normally handle most of the hand-offs.
 Either way, the result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
 
-Upon completion, you will have access to the newly created e-commerce site to test out its functionality,
-the jenkins server to view the configured pipeline,
-and an Operator Node to view Terraform + Ansible status.
+Upon completion, you will have IP access to several instances. The newly created e-commerce site to test out its functionality,
+the jenkins server to view the configured pipeline, grafana charts to monitor the cluster, 
+and an Operator Node to view both the Terraform and Ansible configurations.
 Below are the individual application service pods that will get 
 installed in the Kubernetes environment. 
 
