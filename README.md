@@ -2,7 +2,7 @@
 
 **FULLY automated** CI/CD pipeline using various DevOps technologies. 
 This deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS. The application is a web-based e-commerce app where users can 
-browse items, add them to the cart, and purchase them. Below is the pipeline tree.
+browse items, add them to the cart, and purchase them. Below is the pipeline tree with all the tech being used for this demo.
 
 ![pipeline layout](media/pipeline.jpg)
 
@@ -19,7 +19,7 @@ Once Terraform is complete, Ansible reads the
 new K8s images and deploys the application with all the services to the newly created EKS cluster. 
 
 Python executes several triggers for the sake of this demonstration.
-In a private environment, Jenkins would handle most of the hand-offs.
+In a production environment, Jenkins would normally handle most of the hand-offs.
 Either way, the result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
 
 Upon completion, you will have access to the newly created e-commerce site to test out its functionality,
