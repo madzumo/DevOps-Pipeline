@@ -4,7 +4,7 @@
 This deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS. The application is a web-based e-commerce app where users can 
 browse items, add them to the cart, and purchase them. Below is the pipeline tree showing all the tech used for this demo.
 
-![pipeline layout](media/pipeline.jpg)
+![pipeline tree](media/pipeline2.jpg)
 
 ## Pipeline Flow
 
@@ -22,7 +22,7 @@ Python executes several triggers for the sake of this demonstration.
 In a production environment, Jenkins would normally handle most of the hand-offs.
 Either way, the result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
 
-![site](media/site.png)
+![website](media/site2.png)
 
 Once complete, you will have IP access to several instances. The newly created e-commerce site to test out its functionality,
 the jenkins server to view the configured pipeline, grafana charts to monitor the cluster, 
@@ -30,7 +30,7 @@ and an Operator Node to view both Terraform/Ansible configurations.
 Below are the individual application service pods that will get 
 installed in the Kubernetes environment. 
 
-![micro_service](media/microsevice.png)
+![services](media/microsevice2.png)
 
 ## Prerequisites
 
@@ -53,7 +53,7 @@ This is a self-contained demo utility. Everything needed to showcase the above t
 
 You will have the following menu options.
 
-![Menu](media/menu.png)
+![menu_options](media/menu2.png)
 
 - **Test AWS Connection** - Test connectivity to your AWS environment.
   If you have AWS CLI installed and configured, then 
