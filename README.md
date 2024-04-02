@@ -24,7 +24,7 @@ Either way, the result is the deployment of a microservice e-commerce web applic
 
 ![site](media/site.png)
 
-Upon completion, you will have IP access to several instances. The newly created e-commerce site to test out its functionality,
+Once complete, you will have IP access to several instances. The newly created e-commerce site to test out its functionality,
 the jenkins server to view the configured pipeline, grafana charts to monitor the cluster, 
 and an Operator Node to view both Terraform/Ansible configurations.
 Below are the individual application service pods that will get 
