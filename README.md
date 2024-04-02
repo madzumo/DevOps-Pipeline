@@ -16,7 +16,7 @@ triggers Jenkins to retrieve a copy of the repo,
 build each app service in Docker images, upload the images to a docker 
 registry, triggers Terraform and hands off to Ansible.
 Terraform builds the infrastructure for the application which includes an isolated VPC, EKS cluster 
-S3 bucket, several EC2 instances & all security components.
+S3 bucket, EC2 instance & all security components.
 Once Terraform is complete, Ansible reads the
 new K8s images and deploys the application with all the services to the newly created EKS cluster. 
 
