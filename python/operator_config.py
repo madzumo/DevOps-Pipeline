@@ -81,12 +81,16 @@ class OperatorEc2(Ec2Config):
         install_script = f"""
                 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                 helm repo update
-                kubectl create namespace monitor
-                helm install monitoring prometheus-community/kube-prometheus-stack -n monitor
+                kubectl create namespace monitoring
+                helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
                 """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-        # kubectl port-forward service/monitoring-kube-prometheus-prometheus -n monitor 9090:9090 &
+        # Check status: kubectl --namespace monitoring get pods -l "release=monitoring"
+        # kubectl port-forward service/monitoring-kube-prometheus-prometheus -n monitoring 9090:9090 &
+        # ps aux | grep kubectl | grep port-forward
+        # kill <PID>
+        # Grafana: admin / prom-operator
 
     def get_k8_service_hostname(self):
         hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)

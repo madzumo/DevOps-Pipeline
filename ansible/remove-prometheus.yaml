@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    kubeconfig: /path/to/kubeconfig
+    release_name: monitoring
+    chart_namespace: monitoring
+
+  tasks:
+    - name: Remove Helm chart
+      kubernetes.core.helm:
+        name: "{{ release_name }}"
+        release_namespace: "{{ chart_namespace }}"
+        kubeconfig: "{{ kubeconfig }}"
+        state: absent
+
+    - name: Remove monitoring namespace
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig }}"
+        name: "{{ chart_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: absent
+        wait: yes
+        wait_timeout: 300
+      ignore_errors: yes

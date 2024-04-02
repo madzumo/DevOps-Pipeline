@@ -23,7 +23,7 @@ module "eks" {
   eks_managed_node_groups = {
     demo-node = {
       use_custom_templates = false
-      instance_types       = ["t3.small"]
+      instance_types       = ["t3.large"]
       node_group_name      = var.env_prefix
 
       min_size     = 1
