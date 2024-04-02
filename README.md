@@ -40,7 +40,7 @@ installed in the Kubernetes environment.
 
 ## Download 
 
-[DevOps Demo - Windows](https://github.com/madzumo/devOps_pipeline/releases/download/1.0/madzumo_devops.zip)
+[DevOps Demo - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/1.0/madzumo_devops.zip)
 
 ## How to use
 
