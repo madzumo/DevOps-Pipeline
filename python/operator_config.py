@@ -74,16 +74,16 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-        
-        time.sleep(10)
+
         hc.console_message(["Deploy Prometheus and Grafana"], hc.ConsoleColors.info)
+        time.sleep(10)
         install_script = """
         ansible-playbook madzumo/ansible/deploy-prometheus.yaml
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
-        ssh_run.run_command(install_script)
+        ssh_run.run_command(install_script, False)
 
-    def install_prometheus_grafana(self): # handed off to Ansible to control
+    def install_prometheus_grafana(self):  # handed off to Ansible to manage
         hc.console_message(["Deploy Prometheus and Setup Grafana"], hc.ConsoleColors.info)
         install_script = """
                 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -100,34 +100,6 @@ class OperatorEc2(Ec2Config):
         # Grafana: admin / prom-operator
         # Test traffic:
         # kubectl run curl-test --image=radial/busyboxplus:curl -i --tty --rm
-
-    def get_k8_service_hostname(self):
-        hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)
-        # ***ONLY WORKS AFTER AWS KUBECONFIG SETUP ON LOCAL****
-        config.load_kube_config()
-        v1 = client.CoreV1Api()
-        namespace = "madzumo-ops"  # Adjust as needed
-        service_name = "frontend"  # Replace with your service's name
-
-        try:
-            # Query the service by name
-            service = v1.read_namespaced_service(name=service_name, namespace=namespace)
-            print(f"Service {service_name} details:")
-            print(f"UID: {service.metadata.uid}")
-            print(f"Service Type: {service.spec.type}")
-            print(f"Cluster IP: {service.spec.cluster_ip}")
-
-            service_address = service.spec.cluster_ip
-            if service_address is None:
-                service_address = service.spec.external_ip
-            if service_address is None:
-                service_address = service.spec.load_balancer_ip
-            if service_address is None:
-                service_address = service.spec.external_name
-            print(f"{service_address}")
-
-        except client.exceptions.ApiException as e:
-            print(f"An error occurred: {e}")
 
     def get_web_url(self):
         try:
@@ -160,7 +132,7 @@ class OperatorEc2(Ec2Config):
         except Exception as ex:
             print(f"Get web URl Error:\n{ex}")
             return False
-    
+
     def get_grafana_url(self):
         try:
             install_script = """
@@ -176,7 +148,7 @@ class OperatorEc2(Ec2Config):
         except Exception as ex:
             print(f"Get web URl Error:\n{ex}")
             return False
-        
+
     def terraform_eks_cluster_down(self):
         hc.console_message(["Removing Prometheus and Grafana"], hc.ConsoleColors.info)
         install_script = """
@@ -184,7 +156,7 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-        
+
         hc.console_message(["Removing e-commerce app Kubernetes Cluster"], hc.ConsoleColors.info)
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
@@ -192,7 +164,7 @@ class OperatorEc2(Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
         time.sleep(10)
-        
+
         hc.console_message(["Removing EKS Cluster & other resources (10 min)", "Please Wait!"],
                            hc.ConsoleColors.info)
         install_script = """

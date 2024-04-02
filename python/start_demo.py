@@ -50,7 +50,7 @@ class StartDemo:
 
     def _setup_the_show(self):
         if self._confirm_the_show():
-            hc.console_message(['***Please, Do NOT Interrupt This Process***'], hc.ConsoleColors.warning, total_chars=0)
+            hc.console_message(['Please, Do Not Interrupt This Process'], hc.ConsoleColors.warning, total_chars=0)
             # 1. test AWS connection
             if self.operator_instance.check_aws_credentials():
                 # 2. Setup S3 bucket for storage
