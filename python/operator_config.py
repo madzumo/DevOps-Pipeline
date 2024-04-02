@@ -75,9 +75,9 @@ class OperatorEc2(Ec2Config):
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
-    def install_prometheus_grafana(self):
+    def install_prometheus_grafana(self): # handed off to Ansible to control
         hc.console_message(["Deploy Prometheus and Setup Grafana"], hc.ConsoleColors.info)
-        install_script = f"""
+        install_script = """
                 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                 helm repo update
                 kubectl create namespace monitoring
@@ -137,6 +137,38 @@ class OperatorEc2(Ec2Config):
             print(f"Get web URl Error:\n{ex}")
             return False
 
+    def get_prometheus_url(self):
+        try:
+            install_script = """
+                    kubectl get svc monitoring-kube-prometheus-prometheus -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}' -n monitoring
+                    """
+            # print(self.ec2_instance_public_ip)
+            # print(self.ssh_username)
+            # print(self.ssh_key_path)
+            ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+            ssh_run.run_command(install_script, show_output=False)
+            self.prometheus = f"http://{ssh_run.command_output}"
+            return True
+        except Exception as ex:
+            print(f"Get web URl Error:\n{ex}")
+            return False
+    
+    def get_grafana_url(self):
+        try:
+            install_script = """
+                    kubectl get svc monitoring-grafana -o=jsonpath='{.status.loadBalancer.ingress[0].hostname}' -n monitoring
+                    """
+            # print(self.ec2_instance_public_ip)
+            # print(self.ssh_username)
+            # print(self.ssh_key_path)
+            ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+            ssh_run.run_command(install_script, show_output=False)
+            self.grafana = f"http://{ssh_run.command_output}"
+            return True
+        except Exception as ex:
+            print(f"Get web URl Error:\n{ex}")
+            return False
+        
     def terraform_eks_cluster_down(self):
         hc.console_message(["Removing e-commerce app from EKS Cluster"], hc.ConsoleColors.info)
         install_script = """
