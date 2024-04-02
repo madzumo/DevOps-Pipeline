@@ -30,7 +30,7 @@ class StatusPage:
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '   EKS Cluster status: ' + self.operator.get_cluster_status() + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '        Operator Node: ' + self.operator.ec2_instance_public_ip + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '           Prometheus: ' + self.operator.prometheus + "\n"
+            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '           Prometheus: ' + f"{self.operator.prometheus}:9090" + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '              Grafana: ' + self.operator.grafana + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "username: admin" + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "password: prom-operator" + "\n"
