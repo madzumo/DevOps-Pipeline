@@ -1,14 +1,13 @@
 import time
-
-import ec2_config
-import ssh_client
-from kubernetes import client, config
 import helper_config as hc
 import boto3
-from colorama import Back, Fore, Style
+
+from ec2_config import Ec2Config
+from ssh_client import SSHClient
+from kubernetes import client, config
 
 
-class OperatorEc2(ec2_config.Ec2Config):
+class OperatorEc2(Ec2Config):
     def __init__(self, instance_name, key_id='', secret_id='', region="us-east-1"):
         super().__init__(instance_name, key_id, secret_id, region)
         self.terraform_file_location = ''
@@ -17,6 +16,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         self.ansible = ''
         self.prometheus = 'coming soon'
         self.jenkins = 'coming soon'
+        self.grafana = 'coming soon'
 
     def deploy_terraform_ansible(self):
         hc.console_message(["Install and Setup Terraform + Ansible"], hc.ConsoleColors.info)
@@ -43,7 +43,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         """
         # print(f"What we have\n{self.ec2_instance_public_ip}\n{self.ssh_username}\n{self.ssh_key_path}")
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
     def terraform_eks_cluster_up(self):
@@ -51,7 +51,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         install_script = """
         terraform -chdir=madzumo/terraform/aws init
         """
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
         hc.console_message([''], hc.ConsoleColors.basic)
@@ -62,7 +62,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
         """
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
         time.sleep(5)
 
@@ -73,8 +73,21 @@ class OperatorEc2(ec2_config.Ec2Config):
         aws eks --region {self.region} update-kubeconfig --name madzumo-ops-cluster
         ansible-playbook madzumo/ansible/deploy-web.yaml
         """
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
+
+    def prometheus_grafana(self):
+        hc.console_message(["Deploy Prometheus and Setup Grafana"], hc.ConsoleColors.info)
+        install_script = f"""
+                help repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                helm repo update
+                kubectl create namespace monitoring
+                helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
+                """
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run.run_command(install_script)
+
+        # kubectl port-forward service/monitoring-kube-prometheus-prometheus -n monitoring 9090:9090 &
 
     def get_k8_service_hostname(self):
         hc.console_message(['Get FrondEnd Hostname'], hc.ConsoleColors.info)
@@ -104,39 +117,6 @@ class OperatorEc2(ec2_config.Ec2Config):
         except client.exceptions.ApiException as e:
             print(f"An error occurred: {e}")
 
-    def pipeline_status(self):
-        # AWS status
-        aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'
-        aws_conn_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NO CONNECTION'
-        aws_conn_info = ''
-        if self.check_aws_credentials(show_result=False):
-            aws_conn_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'              Account: ' + self.aws_account_number + "\n"
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'               Key ID: ' + self.key_id + "\n"
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'            Secret ID: ' + self.secret_id
-
-        # Check Pipeline status
-        pipeline_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '             Pipeline:'
-        pipeline_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NOT SETUP'
-        pipeline_info = ''
-        # self.download_key_pair() #unablet to download pem file without corruption of data
-        if self.get_instance() and self.get_web_url():
-            pipeline_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'      e-commerce site: ' + self.k8_website + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   EKS Cluster status: ' + self.get_cluster_status() + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'        Operator Node: ' + self.ec2_instance_public_ip + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'   Prometheus Monitor: ' + self.prometheus + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password" + "\n"
-
-        # hc.clear_console()
-        print(Back.RED + Fore.YELLOW + hc.header_art_status + Style.RESET_ALL + "\n")
-        # print(Back.RED + Fore.YELLOW + header_text + "\n") # entire back is red
-        print(f"{aws_conn_title} {aws_conn_status}\n{aws_conn_info}\n")
-        print(f"{pipeline_title} {pipeline_status}\n{pipeline_info}")
-
     def get_web_url(self):
         try:
             install_script = """
@@ -145,7 +125,7 @@ class OperatorEc2(ec2_config.Ec2Config):
             # print(self.ec2_instance_public_ip)
             # print(self.ssh_username)
             # print(self.ssh_key_path)
-            ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+            ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
             ssh_run.run_command(install_script, show_output=False)
             self.k8_website = f"http://{ssh_run.command_output}"
             return True
@@ -158,7 +138,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         install_script = """
         ansible-playbook madzumo/ansible/remove-web.yaml
         """
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
         time.sleep(10)
         hc.console_message(["Removing EKS Cluster & other resources (10 min)", "Please Wait!"],
@@ -166,7 +146,7 @@ class OperatorEc2(ec2_config.Ec2Config):
         install_script = """
         terraform -chdir=madzumo/terraform/aws destroy -auto-approve
         """
-        ssh_run = ssh_client.SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
 
         hc.console_message(["All resources for EKS cluster removed"], hc.ConsoleColors.info)

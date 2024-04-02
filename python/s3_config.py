@@ -1,9 +1,8 @@
-import aws_madzumo
+from aws_madzumo import AWSbase
 import boto3
-from botocore.exceptions import NoCredentialsError
 
 
-class S3config(aws_madzumo.AWSbase):
+class S3config(AWSbase):
     def __init__(self, bucket_name, key_id='', secret_id='', region="us-east-1"):
         super().__init__(key_id, secret_id, region)
 
@@ -37,7 +36,7 @@ class S3config(aws_madzumo.AWSbase):
 
     def delete_bucket(self):
         try:
-            response = self.s3_client.delete_bucket(Bucket=self.bucket_name)
+            self.s3_client.delete_bucket(Bucket=self.bucket_name)
             # print(response)
         except Exception as ex:
             print(f"Error:{ex}")
