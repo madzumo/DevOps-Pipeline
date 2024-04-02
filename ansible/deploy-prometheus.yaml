@@ -6,7 +6,7 @@
     kubeconfig: /home/ec2-user/.kube/config
     release_name: monitoring
     chart_repo: https://prometheus-community.github.io/helm-charts
-    chart_name: kube-prometheus-stack
+    chart_name: prometheus-community/kube-prometheus-stack
     chart_namespace: monitoring
     chart_values:
       prometheus:
