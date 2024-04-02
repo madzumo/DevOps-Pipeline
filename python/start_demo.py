@@ -3,41 +3,51 @@ from s3_config import S3config
 from ec2_config import Ec2Config
 from operator_config import OperatorEc2
 from status_page import StatusPage
+from enum import Enum
+
+
+class MenuOptions(Enum):
+    test_connection = '1'
+    set_aws_creds = '2'
+    setup_pipeline = '3'
+    destroy_pipeline = '4'
+    status_page = '5'
+    quit_demo = '6'
 
 
 class StartDemo:
-    """main class to run and orchestrate the demo"""
-
+    """main class to orchestrate the full pipeline demo"""
     def __init__(self):
         hc.display_header()
         hc.console_message(hc.welcome_message, hc.ConsoleColors.title)
 
         self.operator_instance = OperatorEc2('madzumo-ops')
         self.jenkins_instance = Ec2Config('madzumo-jenkins')
+        self.menu = MenuOptions
+        print(MenuOptions.test_connection)
+        print(MenuOptions.test_connection.value)
 
     def run_demo(self):
         while True:
             hc.console_message(hc.menu_options, hc.ConsoleColors.menu, 47)
             user_option = input('')
             hc.clear_console()
-            if user_option == '1':
+            if user_option == self.menu.test_connection.value:
                 self.operator_instance.check_aws_credentials()
-            elif user_option == '2':
+            elif user_option == self.menu.set_aws_creds.value:
                 self.operator_instance.set_aws_env_vars()
-            elif user_option == '3':
+            elif user_option == self.menu.setup_pipeline.value:
                 self._setup_the_show()
-            elif user_option == '4':
+            elif user_option == self.menu.destroy_pipeline.value:
                 self._destroy_the_show()
                 hc.clear_console()
                 hc.display_outro_message()
-            elif user_option == '5':
-                sp = StatusPage(self.operator_instance)
-                sp.populate_status_page_show()
-            elif user_option == '6':
+            elif user_option == self.menu.status_page.value:
+                self._status_of_the_show()
+            elif user_option == self.menu.quit_demo.value:
                 break
             else:
                 hc.console_message(['Error', 'Enter option 1-5'], hc.ConsoleColors.error, total_chars=47)
-
             hc.end_of_line()
 
     def _setup_the_show(self):
@@ -65,18 +75,16 @@ class StartDemo:
                 # 5. use Terraform to deploy eks cluster
                 self.operator_instance.terraform_eks_cluster_up()
 
-                # 6. use Ansible to apply full e-commerce site to k8s
+                # 6. use Ansible to apply full e-commerce site on k8s
                 self.operator_instance.ansible_play_ecommerce()
 
-                # 7. deploy Prometheus and Grafana access
+                # 7. deploy Prometheus and Grafana
 
                 hc.console_message(['Pipeline Complete!'], hc.ConsoleColors.title)
                 hc.pause_console()
                 hc.clear_console()
-                # hc.console_message(['Getting Status'], hc.ConsoleColors.title)
-                # status_of_the_show()
-                sp = StatusPage(self.operator_instance)
-                sp.populate_status_page_show()
+                self._status_of_the_show()
+
 
     def _confirm_the_show(self):
         hc.console_message(['This will install the full pipeline ending with a working e-commerce website',
@@ -109,6 +117,10 @@ class StartDemo:
             s3_setup = S3config(f"madzumo-ops-{self.operator_instance.aws_account_number}")
             s3_setup.delete_bucket_contents()
             s3_setup.delete_bucket()
+
+    def _status_of_the_show(self):
+        sp = StatusPage(self.operator_instance)
+        sp.populate_status_page_show()
 
 
 if __name__ == "__main__":
