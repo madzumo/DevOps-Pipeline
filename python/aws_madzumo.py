@@ -17,7 +17,7 @@ class AWSbase:
         self.instance_ami = 'ami-0c101f26f147fa7fd'
         self.aws_account_number = ''
 
-    def set_aws_env_vars(self):
+    def set_aws_credentials_envars(self):
         try:
             hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
             self.key_id = input("Input AWS ACCESS KeY ID:\n")
@@ -31,7 +31,7 @@ class AWSbase:
             hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error)
             return False
 
-    def set_aws_credentials(self):
+    def set_aws_credentials_cli(self):
         try:
             hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
             hc.console_message(['Input AWS ACCESS KeY ID:'], hc.ConsoleColors.warning)
@@ -70,7 +70,7 @@ class AWSbase:
             return True
         except Exception as ex:
             # if show_result:
-            hc.console_message(["AWS Configuration not present", f"{ex}"], hc.ConsoleColors.error)
+            hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"], hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):
