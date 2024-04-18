@@ -1,7 +1,7 @@
 import time
 import helper_config as hc
 import boto3
-
+from colorama import Back, Fore, Style
 from ec2_config import Ec2Config
 from ssh_client import SSHClient
 from kubernetes import client, config
@@ -185,11 +185,15 @@ class OperatorEc2(Ec2Config):
 
     def get_cluster_status(self):
         try:
-            eks_client = boto3.client('eks')
+            session = boto3.Session(
+                aws_access_key_id=self.key_id,
+                aws_secret_access_key=self.secret_id,
+                region_name=self.region)
+            eks_client = session.client('eks')
             response = eks_client.describe_cluster(name='madzumo-ops-cluster')
             status = response['cluster']['status']
             if str(status).lower() == 'active':
-                return 'UP'
+                return Back.BLACK + Fore.YELLOW + Style.BRIGHT + 'UP' + Style.NORMAL
             else:
                 return status
 

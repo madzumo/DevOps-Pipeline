@@ -13,7 +13,7 @@ class ConsoleColors(Enum):
     error = Back.LIGHTRED_EX + Fore.WHITE + Style.BRIGHT
     basic = Back.BLACK + Fore.WHITE
     commands = Back.BLACK + Fore.LIGHTBLUE_EX
-    warning = Back.LIGHTMAGENTA_EX + Fore.BLACK
+    warning = Back.MAGENTA + Fore.LIGHTWHITE_EX
 
 
 welcome_message = ["This utility creates a complete CI/CD pipeline to deploy a microservice app in your AWS "

@@ -12,18 +12,18 @@ class StatusPage:
         aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'
         aws_conn_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NO CONNECTION'
         aws_conn_info = ''
-        if self.operator.check_aws_credentials(show_result=False):
-            aws_conn_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '              Account: ' + self.operator.aws_account_number + "\n"
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '               Key ID: ' + self.operator.key_id + "\n"
-            aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '            Secret ID: ' + self.operator.secret_id
+        # if self.operator.check_aws_credentials(show_result=False):
+        aws_conn_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
+        aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '              Account: ' + self.operator.aws_account_number + "\n"
+        aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '               Key ID: ' + self.operator.key_id + "\n"
+        aws_conn_info += Back.BLACK + Fore.LIGHTWHITE_EX + '            Secret ID: ' + self.operator.secret_id
 
         # Check Pipeline status
         pipeline_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '             Pipeline:'
         pipeline_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NOT SETUP'
         pipeline_info = ''
         # self.download_key_pair() #unablet to download pem file without corruption of data
-        if self.operator.get_instance() and self.operator.get_web_url() and self.operator.get_prometheus_url() and self.operator.get_grafana_url():
+        if self.operator.get_web_url() and self.operator.get_prometheus_url() and self.operator.get_grafana_url():
             pipeline_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '      e-commerce site: ' + self.operator.k8_website + "\n"
             pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"

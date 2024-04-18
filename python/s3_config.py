@@ -6,8 +6,13 @@ class S3config(AWSbase):
     def __init__(self, bucket_name, key_id='', secret_id='', region="us-east-1"):
         super().__init__(key_id, secret_id, region)
 
-        self.s3_client = boto3.client('s3', region_name=self.region)
-        self.s3_resource = boto3.resource('s3')
+        session = boto3.Session(
+            aws_access_key_id=self.key_id,
+            aws_secret_access_key=self.secret_id,
+            region_name=self.region)
+        self.s3_client = session.client('s3')
+        self.s3_resource = session.resource('s3')
+        # self.s3_client = boto3.client('s3', region_name=self.region)
         self.bucket_name = bucket_name
 
     def list_s3_buckets(self):

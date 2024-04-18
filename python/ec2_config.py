@@ -93,7 +93,7 @@ class Ec2Config(aws_madzumo.AWSbase):
                     self.s3_temp_bucket = f"madzumo-ops-{self.aws_account_number}"
                     self.download_key_pair()
                     if show_result:
-                        hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info)
+                        hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info, total_chars=0)
             else:
                 if show_result:
                     hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
@@ -374,5 +374,12 @@ class Ec2Config(aws_madzumo.AWSbase):
             hc.console_message(['Error removing key pair', f"{e}"], hc.ConsoleColors.info)
 
     def reset_ec2_boto3_objects(self):
-        self.ec2_client = boto3.client('ec2', region_name=self.region)
-        self.ec2_resource = boto3.resource('ec2', region_name=self.region)
+        # self.ec2_client = boto3.client('ec2', region_name=self.region)
+        # self.ec2_resource = boto3.resource('ec2', region_name=self.region)
+        session = boto3.Session(
+            aws_access_key_id=self.key_id,
+            aws_secret_access_key=self.secret_id,
+            region_name=self.region  # Optional, but often necessary
+        )
+        self.ec2_client = session.client('ec2')
+        self.ec2_resource = session.resource('ec2')

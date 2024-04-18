@@ -43,8 +43,8 @@ installed in the Kubernetes environment.
 
 ### Option 1: Windows
 
-1. Download the self contained executable:
-    [DOWNLOAD - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/2.0/madzumo_devops.zip)
+1. Download the self-contained executable:
+    [DOWNLOAD — Windows](https://github.com/madzumo/devOps-pipeline/releases/download/1.1/madzumo_devops1.1.zip)
 2. Unzip the file 
 3. Execute **`start_demo.exe`**
 
@@ -84,3 +84,4 @@ You will have the following menu options.
   As long
   as the AWS credentials used have access to the same environment the pipeline was created in then you will see the same status information.
 
+![status](media/status.png)

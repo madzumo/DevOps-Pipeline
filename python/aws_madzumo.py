@@ -28,6 +28,7 @@ class AWSbase:
             os.environ['AWS_ACCESS_KEY_ID'] = self.key_id
             os.environ['AWS_SECRET_ACCESS_KEY'] = self.secret_id
             os.environ['AWS_DEFAULT_REGION'] = self.region
+            hc.console_message(['AWS Credentials set successfully!'], hc.ConsoleColors.title)
             return True
         except Exception as ex:
             hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error)
@@ -44,7 +45,7 @@ class AWSbase:
             subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', self.key_id], check=True)
             subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', self.secret_id], check=True)
             subprocess.run(['aws', 'configure', 'set', 'region', self.region], check=True)
-            print("AWS credentials set successfully.")
+            hc.console_message(['AWS Credentials set successfully!'], hc.ConsoleColors.title)
             return True
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
@@ -59,13 +60,16 @@ class AWSbase:
         try:
             if show_result:
                 hc.console_message(["Test AWS connection"], hc.ConsoleColors.info)
-            aws_client = boto3.client('iam')
+            session = boto3.Session(
+                aws_access_key_id=self.key_id,
+                aws_secret_access_key=self.secret_id,
+                region_name=self.region)
+            aws_client = session.client('iam')
             user_details = aws_client.get_user()
             account_number = user_details['User']['Arn'].split(':')[4]
             self.aws_account_number = account_number
-            credentials = boto3.Session().get_credentials()
-            self.key_id = credentials.access_key
-            self.secret_id = credentials.secret_key
+            # credentials = boto3.Session().get_credentials()
+
             if show_result:
                 hc.console_message(["AWS Credentials valid", f"Account:{self.aws_account_number}"],
                                    hc.ConsoleColors.info)
