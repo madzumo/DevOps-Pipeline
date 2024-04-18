@@ -37,24 +37,22 @@ installed in the Kubernetes environment.
 ## Prerequisites
 
 1. All you need is an AWS **Access Key ID** and **Secret Key ID** 
-2. This pipeline is accessing many components in your AWS environment, so it is highly recommended that your Access & Secret ID user have **Administrator rights** to the AWS environment.
+2. This pipeline is accessing many components in your AWS environment. It is recommended that your Access & Secret ID user have **Administrator rights** to the AWS environment.
 
-## Setup / Install 
+## Setup / Run
 
 ### Option 1: Windows
 
-1. Download and install AWS CLI here: 
-    [awscli](https://awscli.amazonaws.com/AWSCLIV2.msi)
-2. Download the self executable package from release link here:
-    [Download -> DevOps Demo - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/1.0/madzumo_devops.zip)
-3. Unzip 
-4. Execute **`start_demo.exe`**
+1. Download the self contained executable:
+    [DOWNLOAD - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/2.0/madzumo_devops.zip)
+2. Unzip the file 
+3. Execute **`start_demo.exe`**
 
 ### Option 2: Docker
 
 1. Run the following container in interactive mode
 ```shell
-docker run -it --name devopsdemo madzumo/devops-pipeline
+docker run -it madzumo/devops-pipeline
 ```
 
 ## How to use
@@ -70,16 +68,10 @@ You will have the following menu options.
 ---
 2. **Set AWS Credentials** - Enter your AWS Access Key ID & Secret Key ID.
    This step is necessary before installing the full pipeline.
-  For the Windows option, you run this once and it will be set in you AWS CLI config file.
-   No need to run again.
-   For the docker option,
-   If you run the container on each run instead of using the same container then you will have to re-enter these keys.
-   To avoid having to re-enter these keys use the following commands
-   to start the existing container you have already run and connect to it.
-```shell
-docker start devopsdemo
-docker exec -it devopsdemo python3 start_demo.py
-```
+   It saves the Access & Secret Keys as environment variables only.
+   You will need to re-enter the keys on each run.
+  If you have **AWS CLI** installed on your workstation, then this step is not necessary.
+   The demo program will automatically use your configured credentials.
 ---
 3. **Install Full Pipeline** - This is the main option that installs all components, as illustrated above, to create a complete CI/CD pipeline. **Fully Automated**
 ---
