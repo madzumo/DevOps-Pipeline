@@ -63,12 +63,12 @@ You will have the following menu options.
 
 ![menu_options](media/menu2.png)
 
-- **Test AWS Connection** - Test connectivity to your AWS environment.
+1. **Test AWS Connection** - Test connectivity to your AWS environment.
   If you have AWS CLI installed and configured, then 
     it will automatically connect.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
 ---
-- **Set AWS Credentials** - Manually enter your AWS Access Key ID & Secret Key ID.
+2. **Set AWS Credentials** - Manually enter your AWS Access Key ID & Secret Key ID.
   They are set in you AWS CLI config file. If you run the container on each run instead of using the same container then 
 you will have to re-enter these keys. To avoid that Start the existing container and attach in interactive if this has been run once already:
 ```shell
@@ -76,11 +76,11 @@ docker start devopsdemo
 docker exec -it devopsdemo python3 start_demo.py
 ```
 ---
-- **Install Full Pipeline** - Install all components as illustrated above to create a complete CI/CD pipeline. **Fully Automated**
+3. **Install Full Pipeline** - Install all components as illustrated above to create a complete CI/CD pipeline. **Fully Automated**
 ---
-- **Remove Existing Pipeline** - This removes all components and resources related to this demo leaving your AWS environment clean.
+4. **Remove Existing Pipeline** - This removes all components and resources related to this demo leaving your AWS environment clean.
 ---
-- **View Pipeline Status** -
+5. **View Pipeline Status** -
   View the custom URL created for the e-commerce website, the status of your cluster,
   the endpoint of your EKS cluster, the IP address of the Operator Node and the URL for the Jenkins Server.
   You can run this anytime and from any computer.
