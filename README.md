@@ -54,7 +54,7 @@ installed in the Kubernetes environment.
 
 1. Run the following container in interactive mode
 ```shell
-docker run -it madzumo/devops-pipeline
+docker run -it --name devopsdemo madzumo/devops-pipeline
 ```
 
 ## How to use
