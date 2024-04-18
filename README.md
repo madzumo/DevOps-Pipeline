@@ -36,22 +36,28 @@ installed in the Kubernetes environment.
 
 ## Prerequisites
 
-1. All you need is an AWS **Access Key ID** and **Secret Key ID**.
-   However, it's best if you download and install the AWS CLI tool and run
-`aws configure` from the command line.
-   This will ask for the Access Key ID, Secret Key ID, and default Region to statically set on your workstation. 
+1. All you need is an AWS **Access Key ID** and **Secret Key ID** 
 2. This pipeline is accessing many components in your AWS environment, so it is highly recommended that your Access & Secret ID user have **Administrator rights** to the AWS environment.
 
-## Download 
+## Setup / Install 
 
-[DevOps Demo - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/1.0/madzumo_devops.zip)
+### Option 1: Windows
+
+1. Download and install AWS CLI here: 
+    [awscli](https://awscli.amazonaws.com/AWSCLIV2.msi)
+2. Download the self executable package from release link here:
+    [Download -> DevOps Demo - Windows](https://github.com/madzumo/devOps-pipeline/releases/download/1.0/madzumo_devops.zip)
+3. Unzip 
+4. Execute **`start_demo.exe`**
+
+### Option 2: Docker
+
+1. Run the following container in interactive mode
+```shell
+docker run -it madzumo/devops-pipeline
+```
 
 ## How to use
-
-This is a self-contained demo utility. Everything needed to showcase the above technologies is included. 
-1. Download file
-2. Unzip 
-3. Execute **`start_demo.exe`**
 
 You will have the following menu options.
 
