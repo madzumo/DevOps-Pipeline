@@ -6,14 +6,14 @@ import os
 
 
 class ConsoleColors(Enum):
-    title = Back.BLUE + Fore.BLACK
+    title = Back.CYAN + Fore.BLACK
     menu = Back.LIGHTGREEN_EX + Fore.BLACK
     info = Back.LIGHTYELLOW_EX + Fore.BLACK
     info_bright = Back.LIGHTYELLOW_EX + Fore.BLACK + Style.BRIGHT
     error = Back.LIGHTRED_EX + Fore.WHITE + Style.BRIGHT
     basic = Back.BLACK + Fore.WHITE
     commands = Back.BLACK + Fore.LIGHTBLUE_EX
-    warning = Back.MAGENTA + Fore.BLACK
+    warning = Back.LIGHTMAGENTA_EX + Fore.BLACK
 
 
 welcome_message = ["This utility creates a complete CI/CD pipeline to deploy a microservice app in your AWS "

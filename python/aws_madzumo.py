@@ -55,11 +55,6 @@ class AWSbase:
         print(f"Secret:{os.environ.get('AWS_SECRET_ACCESS_KEY')} ")
         print(f"Region:{os.environ.get('AWS_DEFAULT_REGION')} ")
 
-    # def get_aws_creds(self):
-    #     #check if aws cli is installed with credentials
-    #
-    #     #if not then check if we have previous text credentials
-    #     True
     def check_aws_credentials(self, show_result=True):
         try:
             if show_result:
@@ -77,7 +72,8 @@ class AWSbase:
             return True
         except Exception as ex:
             if show_result:
-                hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"], hc.ConsoleColors.error)
+                hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"],
+                                   hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):
