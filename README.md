@@ -69,8 +69,8 @@ You will have the following menu options.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
 ---
 2. **Set AWS Credentials** - Manually enter your AWS Access Key ID & Secret Key ID.
-  They are set in you AWS CLI config file. If you run the container on each run instead of using the same container then 
-you will have to re-enter these keys. To avoid that Start the existing container and attach in interactive if this has been run once already:
+  For the Windows option, they are set in you AWS CLI config file. For the docker option, If you run the container on each run instead of using the same container then 
+you will have to re-enter these keys. To avoid having to re-enter those keys use the following commands to start the existing container you have already run and connect to it.
 ```shell
 docker start devopsdemo
 docker exec -it devopsdemo python3 start_demo.py
