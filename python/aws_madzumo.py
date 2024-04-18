@@ -69,8 +69,8 @@ class AWSbase:
                                    hc.ConsoleColors.info)
             return True
         except Exception as ex:
-            # if show_result:
-            hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"], hc.ConsoleColors.error)
+            if show_result:
+                hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"], hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):
