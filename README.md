@@ -76,9 +76,9 @@ docker start devopsdemo
 docker exec -it devopsdemo python3 start_demo.py
 ```
 ---
-3. **Install Full Pipeline** - Install all components as illustrated above to create a complete CI/CD pipeline. **Fully Automated**
+3. **Install Full Pipeline** - This is the main option that installs all components, as illustrated above, to create a complete CI/CD pipeline. **Fully Automated**
 ---
-4. **Remove Existing Pipeline** - This removes all components and resources related to this demo leaving your AWS environment clean.
+4. **Remove Existing Pipeline** - Removes all components and resources related to this demo leaving your AWS environment clean.
 ---
 5. **View Pipeline Status** -
   View the custom URL created for the e-commerce website, the status of your cluster,
