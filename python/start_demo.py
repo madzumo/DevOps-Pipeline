@@ -36,7 +36,7 @@ class StartDemo:
             if user_option == self.menu.test_connection.value:
                 self.operator_instance.check_aws_credentials()
             elif user_option == self.menu.set_aws_creds.value:
-                self.operator_instance.set_aws_credentials_cli()
+                self.operator_instance.set_aws_credentials_envars()
                 self.operator_instance.reset_ec2_boto3_objects()
             elif user_option == self.menu.setup_pipeline.value:
                 self._setup_the_show()

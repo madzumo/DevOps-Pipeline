@@ -20,12 +20,14 @@ class AWSbase:
     def set_aws_credentials_envars(self):
         try:
             hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
-            self.key_id = input("Input AWS ACCESS KeY ID:\n")
-            self.secret_id = input("Input AWS SECRET Key ID:\n")
+            hc.console_message(['Input AWS ACCESS Key ID:'], hc.ConsoleColors.warning)
+            self.key_id = input("")
+            hc.console_message(['Input AWS SECRET Key ID:'], hc.ConsoleColors.warning)
+            self.secret_id = input("")
+
             os.environ['AWS_ACCESS_KEY_ID'] = self.key_id
             os.environ['AWS_SECRET_ACCESS_KEY'] = self.secret_id
-            if self.region != '':
-                os.environ['AWS_DEFAULT_REGION'] = self.region
+            os.environ['AWS_DEFAULT_REGION'] = self.region
             return True
         except Exception as ex:
             hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error)
@@ -34,7 +36,7 @@ class AWSbase:
     def set_aws_credentials_cli(self):
         try:
             hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
-            hc.console_message(['Input AWS ACCESS KeY ID:'], hc.ConsoleColors.warning)
+            hc.console_message(['Input AWS ACCESS Key ID:'], hc.ConsoleColors.warning)
             self.key_id = input("")
             hc.console_message(['Input AWS SECRET Key ID:'], hc.ConsoleColors.warning)
             self.secret_id = input("")
@@ -53,6 +55,11 @@ class AWSbase:
         print(f"Secret:{os.environ.get('AWS_SECRET_ACCESS_KEY')} ")
         print(f"Region:{os.environ.get('AWS_DEFAULT_REGION')} ")
 
+    # def get_aws_creds(self):
+    #     #check if aws cli is installed with credentials
+    #
+    #     #if not then check if we have previous text credentials
+    #     True
     def check_aws_credentials(self, show_result=True):
         try:
             if show_result:
