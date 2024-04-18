@@ -56,8 +56,15 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
+        hc.console_message(["Planning Terraform Install"], hc.ConsoleColors.info)
+        install_script = """
+                terraform -chdir=madzumo/terraform/aws plan
+                """
+        ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
+        ssh_run.run_command(install_script)
         time.sleep(10)
-        hc.console_message(["Deploy Infrastructure via Terraform"], hc.ConsoleColors.info)
+
+        hc.console_message(["Deploy Infrastructure"], hc.ConsoleColors.info)
         hc.console_message(["Waiting on cluster(10 min) Please Wait!"], hc.ConsoleColors.info, total_chars=0)
         install_script = """
         terraform -chdir=madzumo/terraform/aws apply -auto-approve
