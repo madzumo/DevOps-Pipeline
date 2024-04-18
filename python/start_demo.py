@@ -1,3 +1,4 @@
+import sys
 import helper_config as hc
 from s3_config import S3config
 from ec2_config import Ec2Config
@@ -18,13 +19,14 @@ class MenuOptions(Enum):
 class StartDemo:
     """main class to orchestrate the full pipeline demo"""
 
-    def __init__(self):
+    def __init__(self, slowdown=False):
         hc.display_header()
         hc.console_message(hc.welcome_message, hc.ConsoleColors.title)
 
         self.operator_instance = OperatorEc2('madzumo-ops')
         self.jenkins_instance = Ec2Config('madzumo-jenkins')
         self.menu = MenuOptions
+        self.slowdown = slowdown
 
     def run_demo(self):
         while True:
@@ -54,6 +56,10 @@ class StartDemo:
             hc.console_message(['Please, Do Not Interrupt This Process'], hc.ConsoleColors.warning, total_chars=0)
             # 1. test AWS connection
             if self.operator_instance.check_aws_credentials():
+                if self.slowdown:
+                    hc.console_message(["Step 1 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
+                    hc.pause_console()
+
                 # 2. Setup S3 bucket for storage
                 s3_temp_bucket_name = f"madzumo-ops-{self.operator_instance.aws_account_number}"
                 s3_setup = S3config(s3_temp_bucket_name)
@@ -64,20 +70,33 @@ class StartDemo:
                     s3_setup.create_bucket()
                 self.operator_instance.s3_temp_bucket = s3_temp_bucket_name
 
+                if self.slowdown:
+                    hc.console_message(["Step 2 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
+
                 # 3. Initialize Operator Node Instance (Terraform & Ansible control node)
                 hc.console_message(['Creating Operator Node'], hc.ConsoleColors.info)
                 self.operator_instance.create_ec2_instance(True)
 
+                if self.slowdown:
+                    hc.console_message(["Step 3 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
+
                 # 4. Install Terraform & Ansible on Operator Node
                 self.operator_instance.install_terraform_ansible()
+
+                if self.slowdown:
+                    hc.console_message(["Step 4 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
 
                 # 5. use Terraform to deploy eks cluster
                 self.operator_instance.terraform_eks_cluster_up()
 
-                # 6. use Ansible to apply full e-commerce site on k8s
+                if self.slowdown:
+                    hc.console_message(["Step 5 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
+
+                # 6. use Ansible to apply full e-commerce site on k8s including Prometheus and Grafana
                 self.operator_instance.ansible_apply_playbook()
 
-                # 7. deploy Prometheus and Grafana
+                if self.slowdown:
+                    hc.console_message(["Step 6 finish"], hc.ConsoleColors.error, total_chars=0, force_pause=True)
 
                 hc.console_message(['Pipeline Complete!'], hc.ConsoleColors.title)
                 hc.pause_console()
@@ -118,10 +137,15 @@ class StartDemo:
 
     def _status_of_the_show(self):
         if self.operator_instance.check_aws_credentials():
+            self.operator_instance.populate_ec2_instance(show_result=False)
             sp = StatusPage(self.operator_instance)
             sp.populate_status_page()
 
 
 if __name__ == "__main__":
-    start_demo = StartDemo()
+    slowdown = False
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'slowdown':
+            slowdown = True
+    start_demo = StartDemo(slowdown=slowdown)
     start_demo.run_demo()

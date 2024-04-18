@@ -8,7 +8,7 @@ class StatusPage:
 
     def populate_status_page(self):
         hc.console_message(['Getting Status'], hc.ConsoleColors.title, total_chars=0)
-        self.operator.populate_ec2_instance(False)
+        # self.operator.populate_ec2_instance(False)
         # AWS status
         aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'
         aws_conn_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NO CONNECTION'

@@ -68,9 +68,14 @@ You will have the following menu options.
     it will automatically connect.
   Otherwise, you will need to enter your Access Key & Secret Key using the next option.
 ---
-2. **Set AWS Credentials** - Manually enter your AWS Access Key ID & Secret Key ID.
-  For the Windows option, they are set in you AWS CLI config file. For the docker option, If you run the container on each run instead of using the same container then 
-you will have to re-enter these keys. To avoid having to re-enter those keys use the following commands to start the existing container you have already run and connect to it.
+2. **Set AWS Credentials** - Enter your AWS Access Key ID & Secret Key ID.
+   This step is necessary before installing the full pipeline.
+  For the Windows option, you run this once and it will be set in you AWS CLI config file.
+   No need to run again.
+   For the docker option,
+   If you run the container on each run instead of using the same container then you will have to re-enter these keys.
+   To avoid having to re-enter these keys use the following commands
+   to start the existing container you have already run and connect to it.
 ```shell
 docker start devopsdemo
 docker exec -it devopsdemo python3 start_demo.py

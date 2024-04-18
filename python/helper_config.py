@@ -76,10 +76,11 @@ def get_current_time():
     return military_time
 
 
-def console_message(message_words, message_color, total_chars=total_line_chars, no_formatting=False):
+def console_message(message_words, message_color, total_chars=total_line_chars, no_formatting=False, force_pause=False):
     """Display console messages in color. Message_words must be in a LIST []. Each list item will be on its own line.
     Select from ConsoleColors enum for the Color scheme. To have Back color stop with the word instead of full line,
-    use total_chars = 0. For non-color regular console message use no_formatting = True"""
+    use total_chars = 0. For non-color regular console message use no_formatting = True. To have a pause after a
+    message console use force_pause = True"""
 
     paragraph = ''
     multi_word = False
@@ -104,6 +105,8 @@ def console_message(message_words, message_color, total_chars=total_line_chars, 
     else:
         print(message_color.value + paragraph + Style.RESET_ALL)
 
+    if force_pause:
+        pause_console()
 
 def clear_console():
     # For Windows

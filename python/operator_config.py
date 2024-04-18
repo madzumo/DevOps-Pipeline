@@ -20,7 +20,7 @@ class OperatorEc2(Ec2Config):
 
     def install_terraform_ansible(self):
         hc.console_message(["Install Terraform + Ansible + Helm"], hc.ConsoleColors.info)
-        self.get_aws_keys()
+        # self.get_aws_keys()
 
         install_script = f"""
         sudo yum update
@@ -36,9 +36,6 @@ class OperatorEc2(Ec2Config):
         else
             echo "madzumo folder already exists."
         fi
-        aws configure set aws_access_key_id {self.key_id}
-        aws configure set aws_secret_access_key {self.secret_id}
-        aws configure set default.region {self.region}
         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
         curl -LO https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz
@@ -56,7 +53,7 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
-
+        time.sleep(10)
         hc.console_message(["Deploy Infrastructure via Terraform"], hc.ConsoleColors.info)
         hc.console_message(["Waiting on cluster(10 min) Please Wait!"], hc.ConsoleColors.info, total_chars=0)
         install_script = """
@@ -64,6 +61,7 @@ class OperatorEc2(Ec2Config):
         """
         ssh_run = SSHClient(self.ec2_instance_public_ip, self.ssh_username, self.ssh_key_path)
         ssh_run.run_command(install_script)
+        time.sleep(10)
 
     def ansible_apply_playbook(self):
         hc.console_message(["Deploy app via Ansible on Kubernetes Cluster"], hc.ConsoleColors.info)
