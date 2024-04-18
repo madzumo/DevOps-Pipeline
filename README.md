@@ -1,7 +1,8 @@
 # DevOps CI/CD Pipeline Demo
 
-I have developed a **FULLY automated** CI/CD pipeline demo using various DevOps technologies. 
-It deploys a cloud-first microservices e-commerce application into a Kubernetes cluster in AWS.
+This demo repo is a **FULLY automated** CI/CD pipeline deployment tool using various DevOps technologies. 
+It creates a robust pipeline
+and deploys a cloud-first microservices e-commerce application on a Kubernetes cluster using AWS.
 The application is a web-based e-commerce app where users can 
 browse items, add them to the cart, and purchase them.
 Below is the pipeline tree showing all the tech used for this demo.
