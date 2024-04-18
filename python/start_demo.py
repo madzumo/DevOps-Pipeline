@@ -17,6 +17,7 @@ class MenuOptions(Enum):
 
 class StartDemo:
     """main class to orchestrate the full pipeline demo"""
+
     def __init__(self):
         hc.display_header()
         hc.console_message(hc.welcome_message, hc.ConsoleColors.title)
@@ -33,7 +34,7 @@ class StartDemo:
             if user_option == self.menu.test_connection.value:
                 self.operator_instance.check_aws_credentials()
             elif user_option == self.menu.set_aws_creds.value:
-                self.operator_instance.set_aws_env_vars()
+                self.operator_instance.set_aws_credentials()
             elif user_option == self.menu.setup_pipeline.value:
                 self._setup_the_show()
             elif user_option == self.menu.destroy_pipeline.value:
@@ -83,7 +84,6 @@ class StartDemo:
                 hc.clear_console()
                 self._status_of_the_show()
 
-
     def _confirm_the_show(self):
         hc.console_message(['This will install the full pipeline ending with a working e-commerce website',
                             'Please do NOT interrupt this process once it begins', 'Proceed? (yes/N)'],
@@ -117,8 +117,9 @@ class StartDemo:
             s3_setup.delete_bucket()
 
     def _status_of_the_show(self):
-        sp = StatusPage(self.operator_instance)
-        sp.populate_status_page()
+        if self.operator_instance.check_aws_credentials():
+            sp = StatusPage(self.operator_instance)
+            sp.populate_status_page()
 
 
 if __name__ == "__main__":

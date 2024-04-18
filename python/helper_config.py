@@ -6,7 +6,7 @@ import os
 
 
 class ConsoleColors(Enum):
-    title = Back.BLUE + Fore.WHITE
+    title = Back.BLUE + Fore.BLACK
     menu = Back.LIGHTGREEN_EX + Fore.BLACK
     info = Back.LIGHTYELLOW_EX + Fore.BLACK
     info_bright = Back.LIGHTYELLOW_EX + Fore.BLACK + Style.BRIGHT
@@ -70,7 +70,7 @@ header_art_status = r"""
 
 
 def get_current_time():
-    eastern = pytz.timezone('US/Eastern')
+    eastern = pytz.timezone('America/New_York')
     current_time = datetime.datetime.now(eastern)
     military_time = current_time.strftime('%H:%M:%S')
     return military_time

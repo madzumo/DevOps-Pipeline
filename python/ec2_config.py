@@ -9,8 +9,8 @@ import s3_config
 class Ec2Config(aws_madzumo.AWSbase):
     def __init__(self, instance_name, key_id='', secret_id='', region='us-east-1'):
         super().__init__(key_id, secret_id, region)
-        self.ec2_client = boto3.client('ec2')
-        self.ec2_resource = boto3.resource('ec2')
+        self.ec2_client = boto3.client('ec2', region_name=region)
+        self.ec2_resource = boto3.resource('ec2', region_name=region)
         self.ec2_instance_name = instance_name
         self.ec2_instance_public_ip = ''
         self.ec2_instance_id = ''

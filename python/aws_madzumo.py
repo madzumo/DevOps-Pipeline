@@ -3,6 +3,7 @@ import os
 import boto3
 import configparser
 import helper_config as hc
+import subprocess
 
 
 class AWSbase:
@@ -30,6 +31,22 @@ class AWSbase:
             hc.console_message(["Error getting aws credentials", f"{ex}"], hc.ConsoleColors.error)
             return False
 
+    def set_aws_credentials(self):
+        try:
+            hc.console_message(['Setup AWS Credentials'], hc.ConsoleColors.title)
+            hc.console_message(['Input AWS ACCESS KeY ID:'], hc.ConsoleColors.warning)
+            self.key_id = input("")
+            hc.console_message(['Input AWS SECRET Key ID:'], hc.ConsoleColors.warning)
+            self.secret_id = input("")
+
+            subprocess.run(['aws', 'configure', 'set', 'aws_access_key_id', self.key_id], check=True)
+            subprocess.run(['aws', 'configure', 'set', 'aws_secret_access_key', self.secret_id], check=True)
+            subprocess.run(['aws', 'configure', 'set', 'region', self.region], check=True)
+            print("AWS credentials set successfully.")
+            return True
+        except subprocess.CalledProcessError as e:
+            print(f"Error: {e}")
+
     @staticmethod
     def show_aws_env_vars():
         print(f"Access:{os.environ.get('AWS_ACCESS_KEY_ID')} ")
@@ -53,7 +70,7 @@ class AWSbase:
             return True
         except Exception as ex:
             # if show_result:
-            hc.console_message(["AWS Configuration not present",f"{ex}"], hc.ConsoleColors.error)
+            hc.console_message(["AWS Configuration not present", f"{ex}"], hc.ConsoleColors.error)
             return False
 
     def get_arn_role_info(self):
