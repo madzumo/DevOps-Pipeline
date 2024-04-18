@@ -24,7 +24,7 @@ Python executes several triggers for the sake of this demonstration.
 In a production environment, Jenkins would normally handle most of the hand-offs.
 Either way, the result is the deployment of a microservice e-commerce web application from scratch **Fully Automated**. 
 
-![website](media/site2.png)
+[//]: # (![website]&#40;media/site2.png&#41;)
 
 Once complete, you will have IP access to several instances. The newly created e-commerce site to test out its functionality,
 the jenkins server to view the configured pipeline, grafana charts to monitor the cluster, 
