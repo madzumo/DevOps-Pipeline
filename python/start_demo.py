@@ -30,7 +30,7 @@ class StartDemo:
 
     def run_demo(self):
         while True:
-            hc.console_message(hc.menu_options, hc.ConsoleColors.menu, 47)
+            hc.console_message(hc.menu_options, hc.ConsoleColors.menu)
             user_option = input('')
             hc.clear_console()
             if user_option == self.menu.test_connection.value:
@@ -136,8 +136,7 @@ class StartDemo:
             s3_setup.delete_bucket()
 
     def _status_of_the_show(self):
-        if self.operator_instance.check_aws_credentials():
-            self.operator_instance.populate_ec2_instance(show_result=False)
+        if self.operator_instance.populate_ec2_instance():
             sp = StatusPage(self.operator_instance)
             sp.populate_status_page()
 

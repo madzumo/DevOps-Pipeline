@@ -13,6 +13,7 @@ class Ec2Config(aws_madzumo.AWSbase):
         self.ec2_resource = boto3.resource('ec2', region_name=region)
         self.ec2_instance_name = instance_name
         self.ec2_instance_public_ip = ''
+        self.ec2_instance_private_ip = ''
         self.ec2_instance_id = ''
         self.ec2_instance_public_dns_name = ''
         self.ec2_instance_subnet_id = ''
@@ -73,30 +74,34 @@ class Ec2Config(aws_madzumo.AWSbase):
         if not self.check_aws_credentials(False):
             hc.console_message(["Unable to connect to AWS", "Data not populated"], hc.ConsoleColors.error)
             return False
-        response = self.get_instance()
-        if response:
-            if response[0]['Instances'][0]['State']['Name'] != 'running':
-                if show_result:
-                    hc.console_message(
-                        [f"Error: Instance in {response[0]['Instances'][0]['State']['Name']} state"],
-                        hc.ConsoleColors.error)
+        try:
+            response = self.get_instance()
+            if response:
+                if response[0]['Instances'][0]['State']['Name'] != 'running':
+                    if show_result:
+                        hc.console_message(
+                            [f"Error: Instance in {response[0]['Instances'][0]['State']['Name']} state"],
+                            hc.ConsoleColors.error)
+                else:
+                    self.ec2_instance_id = response[0]['Instances'][0]['InstanceId']
+                    self.ec2_instance_public_ip = response[0]['Instances'][0]['PublicIpAddress']
+                    self.ec2_instance_private_ip = response[0]['Instances'][0]['PrivateIpAddress']
+                    self.ec2_instance_public_dns_name = response[0]['Instances'][0]['PublicDnsName']
+                    self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
+                    self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
+                    self.ssh_key_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
+                    self.s3_temp_bucket = f"madzumo-ops-{self.aws_account_number}"
+                    self.download_key_pair()
+                    if show_result:
+                        hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info)
             else:
-                self.ec2_instance_id = response[0]['Instances'][0]['InstanceId']
-                self.ec2_instance_public_ip = response[0]['Instances'][0]['PublicIpAddress']
-                self.ec2_instance_private_ip = response[0]['Instances'][0]['PrivateIpAddress']
-                self.ec2_instance_public_dns_name = response[0]['Instances'][0]['PublicDnsName']
-                self.ec2_instance_subnet_id = response[0]['Instances'][0]['SubnetId']
-                self.ec2_instance_vpc_id = response[0]['Instances'][0]['VpcId']
-                self.ssh_key_path = os.path.join(os.getcwd(), self.ssh_key_pair_name)
-                self.s3_temp_bucket = f"madzumo-ops-{self.aws_account_number}"
-                self.download_key_pair()
                 if show_result:
-                    hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info)
-        else:
-            if show_result:
-                hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
-                                   hc.ConsoleColors.info)
-        return True
+                    hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
+                                       hc.ConsoleColors.info)
+            return True
+        except Exception as ex:
+            print(f"Error: {ex}")
+            return False
 
     def delete_all_ec2_instances_tag(self):
         response = self.get_all_instances_tag()
