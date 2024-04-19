@@ -80,9 +80,8 @@ You will have the following menu options.
 ---
 5. **View Pipeline Status** -
   View the custom URL created for the e-commerce website, the status of your cluster,
-  the endpoint of your EKS cluster, the IP address of the Operator Node and the URL for the Jenkins Server.
-  You can run this anytime and from any computer.
-  As long
-  as the AWS credentials used have access to the same environment the pipeline was created in then you will see the same status information.
+  the endpoint of your EKS cluster, and the IP address of the Operator Node running Terraform and Ansible.
+  You can run this anytime and from any computer as long
+   as your AWS credentials have access to the environment where the pipeline was created.
 
 ![status](media/status.png)
