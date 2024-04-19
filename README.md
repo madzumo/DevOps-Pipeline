@@ -79,9 +79,14 @@ You will have the following menu options.
 4. **Remove Existing Pipeline** - Removes all components and resources related to this demo leaving your AWS environment clean.
 ---
 5. **View Pipeline Status** -
-  View the custom URL created for the e-commerce website, the status of your cluster,
-  the endpoint of your EKS cluster, and the IP address of the Operator Node running Terraform and Ansible.
-  You can run this anytime and from any computer as long
+  Here you can view the following: 
+- Custom URL created for the e-commerce website
+- Status of your cluster
+- Endpoint of your EKS cluster
+- URL of Prometheus and Grafana to create custom charts
+- IP address of the Operator Node running Terraform and Ansible.
+  
+    You can run this anytime and from any computer as long
    as your AWS credentials have access to the environment where the pipeline was created.
 
 ![status](media/status.png)
