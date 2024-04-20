@@ -14,9 +14,10 @@ class OperatorEc2(Ec2Config):
         self.ansible_playbook_location = ''
         self.k8_website = ''
         self.ansible = ''
-        self.prometheus = 'coming soon'
-        self.jenkins = 'coming soon'
-        self.grafana = 'coming soon'
+        self.prometheus = ''
+        self.jenkins = ''
+        self.grafana = ''
+        self.cluster_status = ''
 
     def install_terraform_ansible(self):
         hc.console_message(["Install Terraform + Ansible + Helm"], hc.ConsoleColors.info)
@@ -193,10 +194,9 @@ class OperatorEc2(Ec2Config):
             response = eks_client.describe_cluster(name='madzumo-ops-cluster')
             status = response['cluster']['status']
             if str(status).lower() == 'active':
-                return Back.BLACK + Fore.YELLOW + Style.BRIGHT + 'UP' + Style.NORMAL
+                self.cluster_status = Back.BLACK + Fore.YELLOW + Style.BRIGHT + 'UP' + Style.NORMAL
             else:
-                return status
-
+                self.cluster_status = status
         except Exception as e:
             print(f"Error: {e}")
             return 'unknown'

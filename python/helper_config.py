@@ -10,7 +10,7 @@ class ConsoleColors(Enum):
     menu = Back.LIGHTGREEN_EX + Fore.BLACK
     info = Back.LIGHTYELLOW_EX + Fore.BLACK
     info_bright = Back.LIGHTYELLOW_EX + Fore.BLACK + Style.BRIGHT
-    error = Back.LIGHTRED_EX + Fore.WHITE + Style.BRIGHT
+    error = Back.RED + Fore.WHITE
     basic = Back.BLACK + Fore.WHITE
     commands = Back.BLACK + Fore.LIGHTBLUE_EX
     warning = Back.MAGENTA + Fore.LIGHTWHITE_EX
@@ -21,7 +21,7 @@ welcome_message = ["This utility creates a complete CI/CD pipeline to deploy a m
                    "Tools Used: Git,Jenkins,Docker,Kubernetes,EKS,ECR,Prometheus,Grafana,Terraform,Ansible & Python",
                    "All you need is an AWS Access Key ID and Secret Key ID. Select option below to get started"]
 
-menu_options = ["Menu Options:", "1 - Test AWS Connection", "2 - Set AWS Credentials",
+menu_options = ["Menu Options:", "1 - Set AWS Credentials", "2 - Test AWS Connection",
                 "3 - Install Full Pipeline",
                 "4 - Remove Existing Pipeline & all resources",
                 "5 - View Pipeline Status", "6 - Quit"]

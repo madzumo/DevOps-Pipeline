@@ -45,7 +45,7 @@ installed in the Kubernetes environment.
 ### Option 1: Windows
 
 1. Download the self-contained executable:
-    [DOWNLOAD — Windows v1.1](https://github.com/madzumo/devOps-pipeline/releases/download/1.1/madzumo_devops1.1.zip)
+    [DOWNLOAD — Windows v1.1](https://github.com/madzumo/devOps-pipeline/releases/download/1.2/madzumo_devops1.2.zip)
 2. Unzip the file 
 3. Execute **`start_demo.exe`**
 
@@ -60,19 +60,13 @@ docker run -it madzumo/devops-pipeline
 
 You will have the following menu options.
 
-![menu_options](media/menu2.png)
+![menu_options](media/menu.png)
 
-1. **Test AWS Connection** - Test connectivity to your AWS environment.
-  If you have AWS CLI installed and configured, then 
-    it will automatically connect.
-  Otherwise, you will need to enter your Access Key & Secret Key using the next option.
----
-2. **Set AWS Credentials** - Enter your AWS Access Key ID & Secret Key ID.
+1. **Set AWS Credentials** - Enter your AWS Access Key ID & Secret Key ID.
    This step is necessary before installing the full pipeline.
    It saves the Access & Secret Keys as environment variables only.
-   You will need to re-enter the keys on each run.
-  If you have **AWS CLI** installed on your workstation, then this step is not necessary.
-   The demo program will automatically use your configured credentials.
+---
+2. **Test AWS Connection** - Test connectivity to your AWS environment after entering it in the previous step.
 ---
 3. **Install Full Pipeline** - This is the main option that installs all components, as illustrated above, to create a complete CI/CD pipeline. **Fully Automated**
 ---

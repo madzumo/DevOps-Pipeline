@@ -8,8 +8,8 @@ from enum import Enum
 
 
 class MenuOptions(Enum):
-    test_connection = '1'
-    set_aws_creds = '2'
+    test_connection = '2'
+    set_aws_creds = '1'
     setup_pipeline = '3'
     destroy_pipeline = '4'
     status_page = '5'
@@ -137,9 +137,9 @@ class StartDemo:
             s3_setup.delete_bucket()
 
     def _status_of_the_show(self):
-        if self.operator_instance.populate_ec2_instance():
+        if self.operator_instance.check_aws_credentials(False):
             sp = StatusPage(self.operator_instance)
-            sp.populate_status_page()
+            sp.populate_status_page(self.operator_instance.populate_ec2_instance(False))
 
 
 if __name__ == "__main__":

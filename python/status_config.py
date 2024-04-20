@@ -6,7 +6,7 @@ class StatusPage:
     def __init__(self, operator):
         self.operator = operator
 
-    def populate_status_page(self):
+    def populate_status_page(self, operator_running):
         hc.console_message(['Getting Status'], hc.ConsoleColors.title, total_chars=0)
         # AWS status
         aws_conn_title = Back.BLACK + Fore.LIGHTWHITE_EX + Style.BRIGHT + '       AWS Connection:'
@@ -23,19 +23,26 @@ class StatusPage:
         pipeline_status = Back.BLACK + Fore.LIGHTRED_EX + Style.BRIGHT + 'NOT SETUP'
         pipeline_info = ''
         # self.download_key_pair() #unablet to download pem file without corruption of data
-        if self.operator.get_web_url() and self.operator.get_prometheus_url() and self.operator.get_grafana_url():
+        if operator_running:
+            self.operator.get_web_url()
+            self.operator.get_prometheus_url()
+            self.operator.get_grafana_url()
+            self.operator.get_cluster_status()
             pipeline_status = Back.BLACK + Fore.GREEN + Style.BRIGHT + 'ACTIVE' + Style.NORMAL
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '      e-commerce site: ' + self.operator.k8_website + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '   EKS Cluster status: ' + self.operator.get_cluster_status() + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '        Operator Node: ' + self.operator.ec2_instance_public_ip + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '           Prometheus: ' + f"{self.operator.prometheus}:9090" + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '              Grafana: ' + self.operator.grafana + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "username: admin" + "\n"
-            pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "password: prom-operator" + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
-            # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password" + "\n"
+        else:
+            pipeline_status = Back.BLACK + Fore.RED + Style.BRIGHT + 'NOT SETUP' + Style.NORMAL
+
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '      e-commerce site: ' + self.operator.k8_website + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '     EKS Cluster Name: ' + 'madzumo-ops-cluster' + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '   EKS Cluster status: ' + self.operator.cluster_status + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '        Operator Node: ' + self.operator.ec2_instance_public_ip + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '           Prometheus: ' + f"{self.operator.prometheus}:9090" + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '              Grafana: ' + self.operator.grafana + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "username: admin" + "\n"
+        pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + '                       ' + "password: prom-operator" + "\n"
+        # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'       Jenkins Server: ' + self.jenkins + "\n"
+        # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "username: admin" + "\n"
+        # pipeline_info += Back.BLACK + Fore.LIGHTWHITE_EX + f'                       ' + "password: password" + "\n"
 
         # hc.clear_console()
         print(Back.RED + Fore.YELLOW + hc.header_art_status + Style.RESET_ALL + "\n")

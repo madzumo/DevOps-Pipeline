@@ -60,6 +60,9 @@ class AWSbase:
         try:
             if show_result:
                 hc.console_message(["Test AWS connection"], hc.ConsoleColors.info)
+            if self.key_id == '' or self.secret_id == '':
+                hc.console_message(["Missing AWS Access & Secret Key ID"], hc.ConsoleColors.error)
+                return False
             session = boto3.Session(
                 aws_access_key_id=self.key_id,
                 aws_secret_access_key=self.secret_id,
@@ -76,7 +79,7 @@ class AWSbase:
             return True
         except Exception as ex:
             if show_result:
-                hc.console_message(["AWS Credentials not present", "Use Option 2 to enter valid AWS Key & Secret ID"],
+                hc.console_message(["AWS Credentials not present", "Use Menu Option to enter valid AWS Key & Secret ID"],
                                    hc.ConsoleColors.error)
             return False
 

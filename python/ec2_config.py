@@ -71,9 +71,6 @@ class Ec2Config(aws_madzumo.AWSbase):
 
     def populate_ec2_instance(self, show_result=True):
         """Populate all variables with Instance Information"""
-        if not self.check_aws_credentials(False):
-            hc.console_message(["AWS Creds missing. Data not populated"], hc.ConsoleColors.error)
-            return False
         try:
             response = self.get_instance()
             if response:
@@ -94,11 +91,12 @@ class Ec2Config(aws_madzumo.AWSbase):
                     self.download_key_pair()
                     if show_result:
                         hc.console_message(["ec2 Instance info populated"], hc.ConsoleColors.info, total_chars=0)
+                return True
             else:
                 if show_result:
                     hc.console_message([f"Unable to locate instance: {self.ec2_instance_name}"],
                                        hc.ConsoleColors.info)
-            return True
+                return False
         except Exception as ex:
             print(f"Error: {ex}")
             return False
