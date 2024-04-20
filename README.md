@@ -45,7 +45,7 @@ installed in the Kubernetes environment.
 ### Option 1: Windows
 
 1. Download the self-contained executable:
-    [DOWNLOAD — Windows v1.1](https://github.com/madzumo/devOps-pipeline/releases/download/1.2/madzumo_devops1.2.zip)
+    [DOWNLOAD — Windows v1.2](https://github.com/madzumo/devOps-pipeline/releases/download/1.2/madzumo_devops1.2.zip)
 2. Unzip the file 
 3. Execute **`start_demo.exe`**
 
