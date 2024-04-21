@@ -120,10 +120,9 @@ class StartDemo:
     def _destroy_the_show(self):
         # 1. test AWS connection
         if self.operator_instance.check_aws_credentials(False):
+            hc.console_message(['REMOVE Pipeline'],hc.ConsoleColors.warning)
             # 2. Populate this workstation with Pipeline data
             self.operator_instance.populate_ec2_instance()
-
-            # 3. CHECK TO SEE IF IT EXISTS YET -> Status checks first
 
             # 4. Clean up all Objects & remove instances
             self.operator_instance.terraform_eks_cluster_down()
