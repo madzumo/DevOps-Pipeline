@@ -137,7 +137,7 @@ class StartDemo:
             s3_setup.delete_bucket()
 
     def _status_of_the_show(self):
-        if self.operator_instance.check_aws_credentials(False):
+        if self.operator_instance.check_aws_credentials():
             sp = StatusPage(self.operator_instance)
             sp.populate_status_page(self.operator_instance.populate_ec2_instance(False))
 

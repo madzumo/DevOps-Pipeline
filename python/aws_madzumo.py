@@ -79,7 +79,7 @@ class AWSbase:
             return True
         except Exception as ex:
             if show_result:
-                hc.console_message(["AWS Credentials not present", "Use Menu Option to enter valid AWS Key & Secret ID"],
+                hc.console_message(["There is a problem with your AWS Keys", f'{ex}'],
                                    hc.ConsoleColors.error)
             return False
 
